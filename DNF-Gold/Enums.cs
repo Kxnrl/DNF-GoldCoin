@@ -15,4 +15,18 @@
         拍卖,
         交易
     }
+
+    // Why use Arena? -> mg_50arenas not area
+    public enum Arena
+    {
+        跨1  = 1,
+        跨2,
+        跨3A,
+        跨3B,
+        跨4,
+        跨5,
+        跨6,
+        跨7,
+        跨8
+    }
 }

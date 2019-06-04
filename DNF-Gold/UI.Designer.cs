@@ -29,14 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ItemsList = new System.Windows.Forms.DataGridView();
             this.pGUID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pCoins = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pRecvs = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pRatio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pArena = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -57,6 +60,8 @@
             this.ES_KeepAlive = new System.Windows.Forms.CheckBox();
             this.Label_CD = new System.Windows.Forms.Label();
             this.BG_Notifaction = new System.Windows.Forms.NotifyIcon(this.components);
+            this.ES_Arena = new System.Windows.Forms.ComboBox();
+            this.Label_SourceCode = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ItemsList)).BeginInit();
             this.Group_Site.SuspendLayout();
             this.SuspendLayout();
@@ -71,19 +76,20 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ItemsList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle26.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle26.Font = new System.Drawing.Font("微软雅黑 Light", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle26.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle26.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle26.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ItemsList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle26;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("微软雅黑 Light", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ItemsList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.ItemsList.ColumnHeadersHeight = 25;
             this.ItemsList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ItemsList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.pGUID,
             this.pCoins,
+            this.pRecvs,
             this.pPrice,
             this.pRatio,
             this.pArena,
@@ -91,19 +97,19 @@
             this.pSites,
             this.Action,
             this.pBLink});
-            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle30.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle30.Font = new System.Drawing.Font("微软雅黑 Light", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle30.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle30.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle30.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle30.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.ItemsList.DefaultCellStyle = dataGridViewCellStyle30;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("微软雅黑 Light", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.ItemsList.DefaultCellStyle = dataGridViewCellStyle7;
             this.ItemsList.Location = new System.Drawing.Point(12, 65);
             this.ItemsList.Name = "ItemsList";
             this.ItemsList.RowHeadersVisible = false;
             this.ItemsList.RowTemplate.Height = 23;
-            this.ItemsList.Size = new System.Drawing.Size(430, 234);
+            this.ItemsList.Size = new System.Drawing.Size(495, 234);
             this.ItemsList.TabIndex = 0;
             this.ItemsList.TabStop = false;
             this.ItemsList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ItemList_Clicked);
@@ -111,6 +117,9 @@
             // pGUID
             // 
             this.pGUID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle2.Format = "0.00";
+            dataGridViewCellStyle2.NullValue = "异常";
+            this.pGUID.DefaultCellStyle = dataGridViewCellStyle2;
             this.pGUID.HeaderText = "ID";
             this.pGUID.Name = "pGUID";
             this.pGUID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -120,8 +129,8 @@
             // pCoins
             // 
             this.pCoins.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle27.NullValue = "异常";
-            this.pCoins.DefaultCellStyle = dataGridViewCellStyle27;
+            dataGridViewCellStyle3.NullValue = "异常";
+            this.pCoins.DefaultCellStyle = dataGridViewCellStyle3;
             this.pCoins.HeaderText = "金币 (万)";
             this.pCoins.MaxInputLength = 32;
             this.pCoins.Name = "pCoins";
@@ -130,25 +139,39 @@
             this.pCoins.ToolTipText = "金币总数";
             this.pCoins.Width = 65;
             // 
+            // pRecvs
+            // 
+            dataGridViewCellStyle4.Format = "0.00";
+            dataGridViewCellStyle4.NullValue = "异常";
+            this.pRecvs.DefaultCellStyle = dataGridViewCellStyle4;
+            this.pRecvs.HeaderText = "到手 (万)";
+            this.pRecvs.MaxInputLength = 32;
+            this.pRecvs.Name = "pRecvs";
+            this.pRecvs.ReadOnly = true;
+            this.pRecvs.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.pRecvs.ToolTipText = "实际到手数值";
+            this.pRecvs.Width = 65;
+            // 
             // pPrice
             // 
             this.pPrice.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle28.Format = "C2";
-            dataGridViewCellStyle28.NullValue = null;
-            this.pPrice.DefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle5.Format = "C2";
+            dataGridViewCellStyle5.NullValue = "异常";
+            this.pPrice.DefaultCellStyle = dataGridViewCellStyle5;
             this.pPrice.HeaderText = "价格 (元)";
             this.pPrice.MaxInputLength = 32;
             this.pPrice.Name = "pPrice";
             this.pPrice.ReadOnly = true;
             this.pPrice.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.pPrice.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.pPrice.ToolTipText = "你需要卖几个肾?";
             this.pPrice.Width = 65;
             // 
             // pRatio
             // 
-            dataGridViewCellStyle29.Format = "N2";
-            dataGridViewCellStyle29.NullValue = null;
-            this.pRatio.DefaultCellStyle = dataGridViewCellStyle29;
+            dataGridViewCellStyle6.Format = "N2";
+            dataGridViewCellStyle6.NullValue = null;
+            this.pRatio.DefaultCellStyle = dataGridViewCellStyle6;
             this.pRatio.HeaderText = "比例";
             this.pRatio.MaxInputLength = 5;
             this.pRatio.Name = "pRatio";
@@ -259,7 +282,7 @@
             // ES_Refresh
             // 
             this.ES_Refresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ES_Refresh.Location = new System.Drawing.Point(367, 36);
+            this.ES_Refresh.Location = new System.Drawing.Point(432, 36);
             this.ES_Refresh.Name = "ES_Refresh";
             this.ES_Refresh.Size = new System.Drawing.Size(75, 23);
             this.ES_Refresh.TabIndex = 5;
@@ -297,7 +320,7 @@
             this.Label_Kxnrl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.Label_Kxnrl.Font = new System.Drawing.Font("微软雅黑 Light", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Label_Kxnrl.ForeColor = System.Drawing.Color.Magenta;
-            this.Label_Kxnrl.Location = new System.Drawing.Point(347, 305);
+            this.Label_Kxnrl.Location = new System.Drawing.Point(412, 305);
             this.Label_Kxnrl.Name = "Label_Kxnrl";
             this.Label_Kxnrl.Size = new System.Drawing.Size(110, 15);
             this.Label_Kxnrl.TabIndex = 8;
@@ -308,7 +331,7 @@
             // ES_Notifaction
             // 
             this.ES_Notifaction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ES_Notifaction.Location = new System.Drawing.Point(367, 12);
+            this.ES_Notifaction.Location = new System.Drawing.Point(432, 12);
             this.ES_Notifaction.Name = "ES_Notifaction";
             this.ES_Notifaction.Size = new System.Drawing.Size(75, 23);
             this.ES_Notifaction.TabIndex = 9;
@@ -321,7 +344,7 @@
             this.ES_AutoRefresh.Checked = true;
             this.ES_AutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ES_AutoRefresh.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F);
-            this.ES_AutoRefresh.Location = new System.Drawing.Point(244, 12);
+            this.ES_AutoRefresh.Location = new System.Drawing.Point(309, 12);
             this.ES_AutoRefresh.Name = "ES_AutoRefresh";
             this.ES_AutoRefresh.Size = new System.Drawing.Size(67, 25);
             this.ES_AutoRefresh.TabIndex = 10;
@@ -335,7 +358,7 @@
             this.ES_KeepAlive.Checked = true;
             this.ES_KeepAlive.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ES_KeepAlive.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F);
-            this.ES_KeepAlive.Location = new System.Drawing.Point(244, 34);
+            this.ES_KeepAlive.Location = new System.Drawing.Point(309, 34);
             this.ES_KeepAlive.Name = "ES_KeepAlive";
             this.ES_KeepAlive.Size = new System.Drawing.Size(68, 25);
             this.ES_KeepAlive.TabIndex = 11;
@@ -347,10 +370,11 @@
             // 
             this.Label_CD.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Label_CD.ForeColor = System.Drawing.Color.Magenta;
-            this.Label_CD.Location = new System.Drawing.Point(317, 12);
+            this.Label_CD.Location = new System.Drawing.Point(382, 12);
             this.Label_CD.Name = "Label_CD";
             this.Label_CD.Size = new System.Drawing.Size(44, 41);
             this.Label_CD.TabIndex = 12;
+            this.Label_CD.Text = "...";
             this.Label_CD.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // BG_Notifaction
@@ -359,11 +383,36 @@
             this.BG_Notifaction.BalloonTipClicked += new System.EventHandler(this.OpenNotifaction);
             this.BG_Notifaction.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OpenNotifaction);
             // 
+            // ES_Arena
+            // 
+            this.ES_Arena.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ES_Arena.Font = new System.Drawing.Font("微软雅黑 Light", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ES_Arena.FormattingEnabled = true;
+            this.ES_Arena.Location = new System.Drawing.Point(244, 23);
+            this.ES_Arena.Name = "ES_Arena";
+            this.ES_Arena.Size = new System.Drawing.Size(49, 25);
+            this.ES_Arena.TabIndex = 13;
+            // 
+            // Label_SourceCode
+            // 
+            this.Label_SourceCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Label_SourceCode.Font = new System.Drawing.Font("微软雅黑 Light", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Label_SourceCode.ForeColor = System.Drawing.Color.DeepSkyBlue;
+            this.Label_SourceCode.Location = new System.Drawing.Point(326, 307);
+            this.Label_SourceCode.Name = "Label_SourceCode";
+            this.Label_SourceCode.Size = new System.Drawing.Size(80, 13);
+            this.Label_SourceCode.TabIndex = 14;
+            this.Label_SourceCode.Text = "查看本软件源代码";
+            this.Label_SourceCode.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.Label_SourceCode.Click += new System.EventHandler(this.CheckSourceCode);
+            // 
             // UI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(454, 320);
+            this.ClientSize = new System.Drawing.Size(519, 320);
+            this.Controls.Add(this.Label_SourceCode);
+            this.Controls.Add(this.ES_Arena);
             this.Controls.Add(this.Label_CD);
             this.Controls.Add(this.ES_KeepAlive);
             this.Controls.Add(this.ES_AutoRefresh);
@@ -396,15 +445,6 @@
         private System.Windows.Forms.CheckBox ES_UU898;
         private System.Windows.Forms.CheckBox ES_DD373;
         private System.Windows.Forms.Button ES_Refresh;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pGUID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pCoins;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pPrice;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pRatio;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pArena;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pTrade;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pSites;
-        private System.Windows.Forms.DataGridViewButtonColumn Action;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pBLink;
         private System.Windows.Forms.GroupBox Group_Site;
         private System.Windows.Forms.Label Label_WARN;
         private System.Windows.Forms.Label Label_Kxnrl;
@@ -413,6 +453,18 @@
         private System.Windows.Forms.CheckBox ES_KeepAlive;
         private System.Windows.Forms.Label Label_CD;
         private System.Windows.Forms.NotifyIcon BG_Notifaction;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pGUID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pCoins;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pRecvs;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pPrice;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pRatio;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pArena;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pTrade;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pSites;
+        private System.Windows.Forms.DataGridViewButtonColumn Action;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pBLink;
+        private System.Windows.Forms.ComboBox ES_Arena;
+        private System.Windows.Forms.Label Label_SourceCode;
     }
 }
 

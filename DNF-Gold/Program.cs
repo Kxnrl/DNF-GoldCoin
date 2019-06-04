@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -34,6 +37,20 @@ namespace DNF_Gold
             }
             catch { Environment.Exit(-1); }
 
+            // 统计追踪
+            new Thread(PostUserInfo)
+            {
+                Priority = ThreadPriority.Lowest,
+                IsBackground = true
+            }.Start();
+
+            // 检查更新
+            new Thread(CheckVersion)
+            {
+                Priority = ThreadPriority.Lowest,
+                IsBackground = true
+            }.Start();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new UI());
@@ -56,6 +73,42 @@ namespace DNF_Gold
                 Environment.Exit(-1);
             }
             return null;
+        }
+
+        static void PostUserInfo()
+        {
+            try
+            {
+                using (var http = new WebClient())
+                {
+                    var ip = http.DownloadString("https://api.ipify.org/");
+
+                    http.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                    http.UploadValues("https://api.kxnrl.com/DNF/GoldCoins/IStats/v1/", "POST", new NameValueCollection
+                {
+                    { "ip", ip },
+                    { "vs", Assembly.GetEntryAssembly().GetName().Version.ToString() }
+                });
+                }
+            }
+            catch (Exception e) { Console.WriteLine("[PostUserInfo] Exception: {0}", e.Message); }
+        }
+
+        static void CheckVersion()
+        {
+            try
+            {
+                using (var http = new WebClient())
+                {
+                    var data = http.DownloadString("https://api.kxnrl.com/DNF/GoldCoins/ICheckVersion/v1/?" + Assembly.GetEntryAssembly().GetName().Version.ToString());
+                    if (data.Contains("Out-Of-Date"))
+                    {
+                        MessageBox.Show("当前版本已过期");
+                        Process.Start("https://github.com/Kxnrl/DNF-GoldCoin/releases");
+                    }
+                }
+            }
+            catch (Exception e) { Console.WriteLine("[CheckVersion] Exception: {0}", e.Message); }
         }
     }
 }

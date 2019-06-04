@@ -8,13 +8,31 @@ namespace DNF_Gold.Spider
     class DD373
     {
         private const string schema = "https";
-        private const string fetchURL = "https://www.dd373.com/s/rbg22w-br53m0-d49m0f-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
 
-        public static void FetchData(List<ItemData> items)
+        private static string GetURL(Arena arena)
+        {
+            switch (arena)
+            {
+                case Arena.跨1 : return "https://www.dd373.com/s/rbg22w-br53m0-d49m0f-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨2 : return "https://www.dd373.com/s/rbg22w-45vnhx-45vnhx-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨3A: return "https://www.dd373.com/s/rbg22w-w95dvc-tkwb6e-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨3B: return "https://www.dd373.com/s/rbg22w-pcc0jn-n28e76-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨4 : return "https://www.dd373.com/s/rbg22w-nvprvh-j7fp6k-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨5 : return "https://www.dd373.com/s/rbg22w-nvprvh-nvprvh-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨6 : return "https://www.dd373.com/s/rbg22w-50s4nq-4mnka8-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨7 : return "https://www.dd373.com/s/rbg22w-k2c5ab-gc43kd-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+                case Arena.跨8 : return "https://www.dd373.com/s/rbg22w-50s4nq-0m9x8u-0-0-0-42hcun-0-0-0-0-0-0-0-0.html";
+            }
+
+            return "https://www.kxnrl.com/";
+        }
+
+        public static void FetchData(Arena arena, List<ItemData> items)
         {
             var http = new HtmlWeb();
-            var html = http.Load(fetchURL);
+            var html = http.Load(GetURL(arena));
             var node = html.DocumentNode.SelectNodes("//div[contains(@class, 'box') and contains(@class, 'money_ner')]");
+            var area = Enum.GetName(typeof(Arena), arena);
 
             foreach (var x in node)
             {
@@ -24,7 +42,7 @@ namespace DNF_Gold.Spider
 
                     var ahref = lists[0].SelectSingleNode("./span").SelectNodes("./a")[1].Attributes["href"].Value;
                     var title = lists[0].SelectSingleNode("./span").SelectNodes("./a")[1].Attributes["title"].Value;
-                    var arena = lists[0].SelectSingleNode("./div[@class='qufu']").SelectNodes("./a")[2].Attributes["title"].Value;
+                  //var arena = lists[0].SelectSingleNode("./div[@class='qufu']").SelectNodes("./a")[2].Attributes["title"].Value;
                     var regex = new Regex(@"\d{4,}").Match(title.Split('=')[0]);
 
                     if (!regex.Success)
@@ -43,7 +61,7 @@ namespace DNF_Gold.Spider
                         Trade = trade,
                         Ratio = float.Parse(ratio),
                         Scale = float.Parse(scale),
-                        Arena = "跨1", //arena,
+                        Arena = area, //arena,
                         bLink = schema + "://" + "www.dd373.com" + ahref,
                         Sites = Sites.Site_DD373,
                         pGUID = Guid.NewGuid().ToString()

@@ -8,13 +8,31 @@ namespace DNF_Gold.Spider
     class UU898
     {
         private const string schema = "https";
-        private const string fetchURL = "https://www.uu898.com/newTrade.aspx?gm=95&area=2322&srv=24986&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
 
-        public static void FetchData(List<ItemData> items)
+        private static string GetURL(Arena arena)
+        {
+            switch (arena)
+            {
+                case Arena.跨1 : return "https://www.uu898.com/newTrade.aspx?gm=95&area=2322&srv=24986&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨2 : return "https://www.uu898.com/newTrade.aspx?gm=95&area=2347&srv=25003&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨3A: return "https://www.uu898.com/newTrade.aspx?gm=95&area=2324&srv=25054&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨3B: return "https://www.uu898.com/newTrade.aspx?gm=95&area=2338&srv=25060&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨4 : return "https://www.uu898.com/newTrade.aspx?gm=95&area=2331&srv=25021&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨5 : return "https://www.uu898.com/newTrade.aspx?gm=95&area=2331&srv=25018&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨6 : return "https://www.uu898.com/newTrade.aspx?gm=95&area=2323&srv=25076&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨7 : return "https://www.uu898.com/newTrade.aspx?gm=95&area=2335&srv=25081&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+                case Arena.跨8 : return "https://www.uu898.com/newTrade.aspx?gm=95&area=2345&srv=25071&c=-3&o=5&sa=0&p=1&ps=20&rm=1";
+            }
+
+            return "https://www.kxnrl.com/";
+        }
+
+        public static void FetchData(Arena arena, List<ItemData> items)
         {
             var http = new HtmlWeb();
-            var html = http.Load(fetchURL);
+            var html = http.Load(GetURL(arena));
             var node = html.DocumentNode.SelectNodes("//ul[@class='splb_list']");
+            var area = Enum.GetName(typeof(Arena), arena);
 
             foreach (var x in node)
             {
@@ -27,7 +45,7 @@ namespace DNF_Gold.Spider
 
                     var ahref = schema + ":" + li0_a.Attributes["href"].Value;
                     var title = li0_a.InnerText;
-                    var arena = HtmlEntity.DeEntitize(sp_li0.SelectSingleNode("./p[@class='qf_txt']").SelectSingleNode("./i").InnerText).Replace(">>", "");  //.SelectNodes("./a[@target='_blank']")[1].InnerText;
+                  //var arena = HtmlEntity.DeEntitize(sp_li0.SelectSingleNode("./p[@class='qf_txt']").SelectSingleNode("./i").InnerText).Replace(">>", "");  //.SelectNodes("./a[@target='_blank']")[1].InnerText;
                     var price = x.SelectSingleNode("./li[contains(@class, 'Red') and contains(@class, 'zuan_dh')]").SelectSingleNode("./span").InnerText;
                     var match = sp_li1.SelectSingleNode("./h6").SelectNodes("./span");
                     var scale = string.Format("{0} [{1}]", match[0].InnerText, match[1].InnerText);
@@ -46,7 +64,7 @@ namespace DNF_Gold.Spider
                         Trade = trade,
                         Ratio = float.Parse(match[0].InnerText.Replace("1元=", "").Replace("万金", "")),
                         Scale = float.Parse(match[1].InnerText.Replace("元/万金", "")),
-                        Arena = arena,
+                        Arena = area, //arena,
                         bLink = ahref,
                         Sites = Sites.Site_UU898,
                         pGUID = Guid.NewGuid().ToString()

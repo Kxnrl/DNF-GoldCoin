@@ -32,6 +32,7 @@ namespace DNF_Gold
             InitializeComponent();
             InitializeTable();
             InitializeNotifaction();
+            InitializeArenas();
             InitializeConfings();
 
             Icon = Properties.Resources.dfo;
@@ -39,10 +40,19 @@ namespace DNF_Gold
             stsUI = new SettingsUI();
         }
 
+        private void InitializeArenas()
+        {
+            foreach (var a in Enum.GetNames(typeof(Arena)))
+            {
+                ES_Arena.Items.Add(a);
+            }
+        }
+
         private void InitializeTable()
         {
             ItemsList.RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             ItemsList.Columns["pCoins"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            ItemsList.Columns["pRecvs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             ItemsList.Columns["pPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
         }
 
@@ -88,6 +98,8 @@ namespace DNF_Gold
             refreshTimer.Start();
 
             new Thread(RefreshData).Start();
+
+            ES_Arena.SelectedIndexChanged += new EventHandler(ArenaOnChanged);
         }
 
         private void OnRefreshTimer(object sender, EventArgs e)
@@ -114,18 +126,21 @@ namespace DNF_Gold
         {
             beginUpdate = true;
 
+            var arena = Arena.跨1;
+
             Invoke(new Action(() =>
             {
                 ES_Refresh.Enabled = false;
                 Label_CD.Text = "...";
+                arena = (Arena)Enum.Parse(typeof(Arena), ES_Arena.Items[ES_Arena.SelectedIndex].ToString());
             }));
 
             List<ItemData> items = new List<ItemData>();
 
-            if (ES_UU898.Checked) Spider.UU898.FetchData(items);
-            if (ES_DD373.Checked) Spider.DD373.FetchData(items);
-            if (ES_7881.Checked) Spider.S7881.FetchData(items);
-            if (ES_5173.Checked) Spider.S5173.FetchData(items);
+            if (ES_UU898.Checked) Spider.UU898.FetchData(arena, items);
+            if (ES_DD373.Checked) Spider.DD373.FetchData(arena, items);
+            if (ES_7881.Checked) Spider.S7881.FetchData(arena, items);
+            if (ES_5173.Checked) Spider.S5173.FetchData(arena, items);
 
             Invoke(new Action(() =>
             {
@@ -150,7 +165,7 @@ namespace DNF_Gold
                         }
                     }
 
-                    ItemsList.Rows.Add(item.pGUID, item.Coins, item.Price, item.Ratio, item.Arena, Enum.GetName(typeof(Trade), item.Trade), Enum.GetName(typeof(Sites), item.Sites).Replace("Site_", ""), RandomButton(), item.bLink);
+                    ItemsList.Rows.Add(item.pGUID, item.Coins, (float)(item.Coins * 0.97), item.Price, item.Ratio, item.Arena, Enum.GetName(typeof(Trade), item.Trade), Enum.GetName(typeof(Sites), item.Sites).Replace("Site_", ""), RandomButton(), item.bLink);
                 }
 
                 if (count > 0)
@@ -161,6 +176,8 @@ namespace DNF_Gold
                 }
 
                 SetAllControls(true);
+
+                Text = "DNF金币比价器" + "   " + "[" + Enum.GetName(typeof(Arena), arena) + "]";
             }));
 
             tickTimer = 30;
@@ -207,7 +224,7 @@ namespace DNF_Gold
 
         private void ItemList_Clicked(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 7)
+            if (e.ColumnIndex == 8)
             {
                 try
                 {
@@ -218,8 +235,20 @@ namespace DNF_Gold
             }
         }
 
+        private void CheckSourceCode(object sender, EventArgs e)
+        {
+            try { Process.Start("https://github.com/Kxnrl/DNF-GoldCoin"); } catch { }
+        }
+
         private void Label_Kxnrl_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("跨①纯女鬼剑士工会" + Environment.NewLine +
+                            "[小萝莉玫瑰花店]" + Environment.NewLine +
+                            "欢迎你的加入!",
+                            "嘤嘤嘤~ 打死你个嘤嘤怪",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
             try { Process.Start("https://www.kxnrl.com/"); } catch { }
         }
 
@@ -233,9 +262,25 @@ namespace DNF_Gold
                             "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
         }
 
+        private void ArenaOnChanged(object sender, EventArgs e)
+        {
+            tickTimer = 30;
+
+            ES_Arena.Enabled = false;
+
+            new Thread(RefreshData)
+            {
+                IsBackground = true,
+                Name = "Update Thread",
+                Priority = ThreadPriority.BelowNormal
+            }.Start();
+        }
+
         private void ES_Refresh_Click(object sender, EventArgs e)
         {
             tickTimer = 30;
+
+            ES_Refresh.Enabled = false;
 
             new Thread(RefreshData)
             {
@@ -286,6 +331,18 @@ namespace DNF_Gold
             SaveConfigs();
         }
 
+        private void OnFormResized(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                myHandle = Process.GetCurrentProcess().MainWindowHandle;
+                Win32Api.Window.ShowWindow(myHandle, Win32Api.Window.SW_HIDE);
+                BG_Notifaction.BalloonTipTitle = "DNF金币比价器";
+                BG_Notifaction.BalloonTipText = "现在已经开始后台工作啦.~";
+                BG_Notifaction.ShowBalloonTip(3000);
+            }
+        }
+
         private void OpenNotifaction(object sender, MouseEventArgs e)
         {
             Win32Api.Window.ShowWindow(myHandle, Win32Api.Window.SW_SHOW);
@@ -308,6 +365,8 @@ namespace DNF_Gold
 
                 ImportConfigs(new Dictionary<string, object>
                 {
+                    ["ES_Arena"] = Arena.跨1,
+
                     ["ES_7881"] = true,
                     ["ES_5173"] = true,
 
@@ -315,7 +374,7 @@ namespace DNF_Gold
                     ["ES_UU898"] = true,
 
                     ["AutoRefresh"] = true,
-                    ["BackGround"] = true,
+                    ["BackGround"] = false,
 
                     ["N_Enabled"] = false,
                     ["N_MaxPrice"] = 2000.0f,
@@ -328,6 +387,8 @@ namespace DNF_Gold
             {
                 ImportConfigs(new Dictionary<string, object>
                 {
+                    ["ES_Arena"] = Ini2Enum("DNF-Gold.Global", "Arena", typeof(Arena)),
+
                     ["ES_7881"] = Ini2Bool("DNF-Gold.Enabled", "7881"),
                     ["ES_5173"] = Ini2Bool("DNF-Gold.Enabled", "5173"),
 
@@ -342,6 +403,17 @@ namespace DNF_Gold
                     ["N_MinRatio"] = Ini2Float("DNF-Gold.Notifaction", "MinRatio")
                 });
             }
+        }
+
+        private object Ini2Enum(string section, string key, Type type)
+        {
+            var data = Win32Api.Profile.GetIniSectionValue(configFile, section, key, "跨1");
+            return Enum.Parse(type, data);
+        }
+
+        private void Enum2Ini(string section, string key, Type type, object val)
+        {
+            Win32Api.Profile.SetIniSectionValue(configFile, section, key, Enum.GetName(type, val));
         }
 
         private bool Ini2Bool(string section, string key)
@@ -370,6 +442,16 @@ namespace DNF_Gold
 
         private void ImportConfigs(Dictionary<string, object> conf)
         {
+            var arena = Enum.GetName(typeof(Arena), conf["ES_Arena"]);
+            for (int index = 0; index < ES_Arena.Items.Count; ++index)
+            {
+                if (arena.Equals(ES_Arena.Items[index].ToString()))
+                {
+                    ES_Arena.SelectedIndex = index;
+                    break;
+                }
+            }
+
             ES_7881.Checked = (bool)conf["ES_7881"];
             ES_5173.Checked = (bool)conf["ES_5173"];
 
@@ -398,18 +480,6 @@ namespace DNF_Gold
             Bool2Ini("DNF-Gold.Notifaction", "Enabled", N_Enabled);
             Float2Ini("DNF-Gold.Notifaction", "MaxPrice", N_MaxPrice);
             Float2Ini("DNF-Gold.Notifaction", "MinRatio", N_MinRatio);
-        }
-
-        private void OnFormResized(object sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                myHandle = Process.GetCurrentProcess().MainWindowHandle;
-                Win32Api.Window.ShowWindow(myHandle, Win32Api.Window.SW_HIDE);
-                BG_Notifaction.BalloonTipTitle = "DNF金币比价器";
-                BG_Notifaction.BalloonTipText = "现在已经开始后台工作啦.~";
-                BG_Notifaction.ShowBalloonTip(3000);
-            }
         }
     }
 }

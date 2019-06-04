@@ -28,10 +28,10 @@ namespace DNF_Gold.Win32Api
         [DllImport("kernel32.dll")]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retval, int size, string filePath);
 
-        public static string GetIniSectionValue(string file, string section, string key)
+        public static string GetIniSectionValue(string file, string section, string key, string defaultVal = null)
         {
             var stringBuilder = new StringBuilder(1024);
-            GetPrivateProfileString(section, key, null, stringBuilder, 1024, file);
+            GetPrivateProfileString(section, key, defaultVal, stringBuilder, 1024, file);
             return stringBuilder.ToString();
         }
 

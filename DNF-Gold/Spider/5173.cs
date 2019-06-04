@@ -9,14 +9,32 @@ namespace DNF_Gold.Spider
     class S5173
     {
         private const string schema = "http";
-        private const string fetchURL = "http://s.5173.com/dnf-xptjnl-f10pkw-uokzto-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
 
-        public static void FetchData(List<ItemData> items)
+        private static string GetURL(Arena arena)
+        {
+            switch (arena)
+            {
+                case Arena.跨1 : return "http://s.5173.com/dnf-xptjnl-f10pkw-uokzto-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨2 : return "http://s.5173.com/dnf-xptjnl-kt0l3t-qrw5cb-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨3A: return "http://s.5173.com/dnf-xptjnl-xsiupy-deer3j-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨3B: return "http://s.5173.com/dnf-xptjnl-riodz0-p1zmcp-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨4 : return "http://s.5173.com/dnf-xptjnl-43yfk3-nypj3u-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨5 : return "http://s.5173.com/dnf-xptjnl-43yfk3-ctrpel-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨6 : return "http://s.5173.com/dnf-xptjnl-joq4bd-dlrujw-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨7 : return "http://s.5173.com/dnf-xptjnl-uttqq3-hbbd3j-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+                case Arena.跨8 : return "http://s.5173.com/dnf-xptjnl-a0rpqj-lzoq2j-0-bx1xiv-0-0-0-a-a-a-a-a-0-itemprice_asc-0-0.shtml";
+            }
+
+            return "https://www.kxnrl.com/";
+        }
+
+        public static void FetchData(Arena arena, List<ItemData> items)
         {
             var http = new HtmlWeb();
             http.OverrideEncoding = Encoding.GetEncoding("gb2312");
-            var html = http.Load(fetchURL);
+            var html = http.Load(GetURL(arena));
             var node = html.DocumentNode.SelectNodes("//div[@class='sin_pdlbox']");
+            var area = Enum.GetName(typeof(Arena), arena);
 
             foreach (var x in node)
             {
@@ -26,7 +44,7 @@ namespace DNF_Gold.Spider
 
                     var ahref = lists[0].SelectNodes("./li")[0].SelectSingleNode("./h2").SelectSingleNode("./a").Attributes["href"].Value;
                     var title = lists[0].SelectNodes("./li")[0].SelectSingleNode("./h2").SelectSingleNode("./a").InnerText;
-                    var arena = lists[0].SelectNodes("./li")[3].SelectNodes("./a")[2].InnerText;
+                  //var arena = lists[0].SelectNodes("./li")[3].SelectNodes("./a")[2].InnerText;
                     var regex = new Regex(@"\d{4,}").Match(title.Split('=')[0]);
 
                     if (!regex.Success)
@@ -45,7 +63,7 @@ namespace DNF_Gold.Spider
                         Trade = trade,
                         Ratio = float.Parse(ratio),
                         Scale = float.Parse(scale),
-                        Arena = "跨1", //arena,
+                        Arena = area, //arena,
                         bLink = ahref,
                         Sites = Sites.Site_5173,
                         pGUID = Guid.NewGuid().ToString()
