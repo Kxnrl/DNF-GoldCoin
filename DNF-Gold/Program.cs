@@ -100,7 +100,7 @@ namespace DNF_Gold
             {
                 using (var http = new WebClient())
                 {
-                    var data = http.DownloadString("https://api.kxnrl.com/DNF/GoldCoins/ICheckVersion/v1/?" + Assembly.GetEntryAssembly().GetName().Version.ToString());
+                    var data = http.DownloadString("https://api.kxnrl.com/DNF/GoldCoins/ICheckVersion/v1/?v=" + Assembly.GetEntryAssembly().GetName().Version.ToString());
                     if (data.Contains("Out-Of-Date"))
                     {
                         MessageBox.Show("当前版本已过期");

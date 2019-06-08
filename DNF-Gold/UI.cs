@@ -137,10 +137,70 @@ namespace DNF_Gold
 
             List<ItemData> items = new List<ItemData>();
 
-            if (ES_UU898.Checked) Spider.UU898.FetchData(arena, items);
-            if (ES_DD373.Checked) Spider.DD373.FetchData(arena, items);
-            if (ES_7881.Checked) Spider.S7881.FetchData(arena, items);
-            if (ES_5173.Checked) Spider.S5173.FetchData(arena, items);
+            var resetEvent = new ManualResetEvent[4];
+
+            resetEvent[0] = new ManualResetEvent(false);
+            resetEvent[1] = new ManualResetEvent(false);
+            resetEvent[2] = new ManualResetEvent(false);
+            resetEvent[3] = new ManualResetEvent(false);
+
+            if (ES_UU898.Checked)
+            {
+                new Thread(() =>
+                {
+                    Spider.UU898.FetchData(arena, items);
+                    resetEvent[0].Set();
+                })
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal,
+                    Name = "Fetch UU898"
+                }.Start();
+            }
+
+            if (ES_DD373.Checked)
+            {
+                new Thread(() =>
+                {
+                    Spider.DD373.FetchData(arena, items);
+                    resetEvent[1].Set();
+                })
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal,
+                    Name = "Fetch DD373"
+                }.Start();
+            }
+
+            if (ES_7881.Checked)
+            {
+                new Thread(() =>
+                {
+                    Spider.S7881.FetchData(arena, items);
+                    resetEvent[2].Set();
+                })
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal,
+                    Name = "Fetch 7881"
+                }.Start();
+            }
+
+            if (ES_5173.Checked)
+            {
+                new Thread(() =>
+                {
+                    Spider.S5173.FetchData(arena, items);
+                    resetEvent[3].Set();
+                })
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal,
+                    Name = "Fetch 5173"
+                }.Start();
+            }
+
+            WaitHandle.WaitAll(resetEvent);
 
             Invoke(new Action(() =>
             {
@@ -165,7 +225,7 @@ namespace DNF_Gold
                         }
                     }
 
-                    ItemsList.Rows.Add(item.pGUID, item.Coins, (float)(item.Coins * 0.97), item.Price, item.Ratio, item.Arena, Enum.GetName(typeof(Trade), item.Trade), Enum.GetName(typeof(Sites), item.Sites).Replace("Site_", ""), RandomButton(), item.bLink);
+                    ItemsList.Rows.Add(item.pGUID, item.Coins, (float)(item.Coins * (item.Trade == Trade.邮寄 ? 0.95 : 0.97)), item.Price, item.Ratio, item.Arena, Enum.GetName(typeof(Trade), item.Trade), Enum.GetName(typeof(Sites), item.Sites).Replace("Site_", ""), RandomButton(), item.bLink);
                 }
 
                 if (count > 0)
