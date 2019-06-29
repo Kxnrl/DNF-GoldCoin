@@ -16,16 +16,21 @@ namespace DNF_Gold
         MenuItem exitButton;
 
         private System.Windows.Forms.Timer refreshTimer = new System.Windows.Forms.Timer();
-        private uint tickTimer = 30u;
         private bool beginUpdate = false;
         private static string configFile;
 
         private static IntPtr myHandle;
         private static SettingsUI stsUI;
 
+        public static uint tickTimer = 30u;
+
         public static float N_MaxPrice = 0.0f;
         public static float N_MinRatio = 30.0f;
-        public static bool  N_Enabled = false;
+        public static bool N_Enabled = false;
+        public static bool N_Background = false;
+        public static bool N_AutoRefresh = false;
+   
+        static Dictionary<string, ItemData> ItemDict = new Dictionary<string, ItemData>();
 
         public UI()
         {
@@ -38,6 +43,16 @@ namespace DNF_Gold
             Icon = Properties.Resources.dfo;
 
             stsUI = new SettingsUI();
+        }
+
+        private void BackgroundRefresh()
+        {
+            List<string> sellOut = new List<string>();
+
+            while (true)
+            {
+                BeginCheckPrice(sellOut);
+            }
         }
 
         private void InitializeArenas()
@@ -97,7 +112,17 @@ namespace DNF_Gold
             refreshTimer.Enabled = true;
             refreshTimer.Start();
 
-            new Thread(RefreshData).Start();
+            new Thread(RefreshData)
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.AboveNormal,
+            }.Start();
+            new Thread(BackgroundRefresh)
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.Lowest,
+                Name = "Check Buyable"
+            }.Start();
 
             ES_Arena.SelectedIndexChanged += new EventHandler(ArenaOnChanged);
         }
@@ -109,7 +134,7 @@ namespace DNF_Gold
 
             tickTimer--;
 
-            if (tickTimer <= 0 && ES_AutoRefresh.Checked)
+            if (tickTimer <= 0 && N_AutoRefresh)
             {
                 new Thread(RefreshData)
                 {
@@ -137,12 +162,13 @@ namespace DNF_Gold
 
             List<ItemData> items = new List<ItemData>();
 
-            var resetEvent = new ManualResetEvent[4];
+            var resetEvent = new ManualResetEvent[5];
 
             resetEvent[0] = new ManualResetEvent(false);
             resetEvent[1] = new ManualResetEvent(false);
             resetEvent[2] = new ManualResetEvent(false);
             resetEvent[3] = new ManualResetEvent(false);
+            resetEvent[4] = new ManualResetEvent(false);
 
             if (ES_UU898.Checked)
             {
@@ -172,12 +198,26 @@ namespace DNF_Gold
                 }.Start();
             }
 
+            if (ES_EE979.Checked)
+            {
+                new Thread(() =>
+                {
+                    Spider.EE979.FetchData(arena, items);
+                    resetEvent[2].Set();
+                })
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.BelowNormal,
+                    Name = "Fetch EE979"
+                }.Start();
+            }
+
             if (ES_7881.Checked)
             {
                 new Thread(() =>
                 {
                     Spider.S7881.FetchData(arena, items);
-                    resetEvent[2].Set();
+                    resetEvent[3].Set();
                 })
                 {
                     IsBackground = true,
@@ -191,7 +231,7 @@ namespace DNF_Gold
                 new Thread(() =>
                 {
                     Spider.S5173.FetchData(arena, items);
-                    resetEvent[3].Set();
+                    resetEvent[4].Set();
                 })
                 {
                     IsBackground = true,
@@ -201,6 +241,12 @@ namespace DNF_Gold
             }
 
             WaitHandle.WaitAll(resetEvent);
+
+            resetEvent[0].Dispose();
+            resetEvent[1].Dispose();
+            resetEvent[2].Dispose();
+            resetEvent[3].Dispose();
+            resetEvent[4].Dispose();
 
             Invoke(new Action(() =>
             {
@@ -213,6 +259,14 @@ namespace DNF_Gold
 
                 foreach (var item in items.OrderByDescending(p => p.Ratio).ToList())
                 {
+                    // 过滤异常不能交易的金币?
+                    // 黑商你妈死了?
+                    // 哄抬你妈的金价呢?
+                    if (item.Price >= 10000f || item.Ratio >= 100.0)
+                    {
+                        continue;
+                    }
+
                     if (N_Enabled &&
                         item.Price <= N_MaxPrice &&
                         item.Ratio >= N_MinRatio)
@@ -225,6 +279,7 @@ namespace DNF_Gold
                         }
                     }
 
+                    ItemDict[item.pGUID] = item;
                     ItemsList.Rows.Add(item.pGUID, item.Coins, (float)(item.Coins * (item.Trade == Trade.邮寄 ? 0.95 : 0.97)), item.Price, item.Ratio, item.Arena, Enum.GetName(typeof(Trade), item.Trade), Enum.GetName(typeof(Sites), item.Sites).Replace("Site_", ""), RandomButton(), item.bLink);
                 }
 
@@ -245,6 +300,84 @@ namespace DNF_Gold
             beginUpdate = false;
         }
 
+        private void BeginCheckPrice(List<string> sellOut)
+        {
+            var list = new List<string>();
+
+            Invoke(new Action(() =>
+            {
+                for (int index = 0; index < ItemsList.Rows.Count && index < 9; ++index)
+                {
+                    var pGuid = ItemsList.Rows[index].Cells["pGUID"].Value.ToString();
+
+                    if (string.IsNullOrEmpty(pGuid) || sellOut.Contains(pGuid))
+                        continue;
+
+                    list.Add(pGuid);
+                }
+            }));
+
+            foreach (var key in list)
+            {
+                var time = DateTime.Now;
+
+                CheckItemBuyable(key, sellOut);
+
+                var diff = (int)(DateTime.Now - time).TotalMilliseconds;
+                if (diff < 1000)
+                {
+                    // delay
+                    Thread.Sleep(1000 - diff);
+                }
+            }
+        }
+
+        private void CheckItemBuyable(string guid, List<string> sellOut)
+        {
+            try
+            {
+                var item = ItemDict[guid];
+                var buyable = true;
+
+                switch (item.Sites)
+                {
+                    case Sites.Site_5173:  buyable = Spider.S5173.Buyable(item.bLink); break;
+                    case Sites.Site_7881:  buyable = Spider.S7881.Buyable(item.bLink); break;
+                    case Sites.Site_DD373: buyable = Spider.DD373.Buyable(item.bLink); break;
+                    case Sites.Site_UU898: buyable = Spider.UU898.Buyable(item.bLink); break;
+                    case Sites.Site_EE979: buyable = Spider.EE979.Buyable(item.bLink); break;
+                }
+
+#if DEBUG
+                //Debug.Print("Check [{0}] on [{1}] result {2}", item.pGUID, item.bLink, buyable);
+#endif
+
+                if (buyable)
+                    return;
+
+                sellOut.Add(item.pGUID);
+
+                Invoke(new Action(() =>
+                {
+                    for (int index = 0; index < ItemsList.Rows.Count; ++index)
+                    {
+                        if (item.pGUID.Equals(ItemsList.Rows[index].Cells["pGUID"].Value.ToString()))
+                        {
+                            ItemsList.Rows[index].Cells["Action"].Value = "已被购买";
+#if DEBUG
+                            Debug.Print("Update Status [{0}]", item.pGUID);
+#endif
+                            break;
+                        }
+                    }
+                }));
+            }
+            catch (Exception ex)
+            {
+                Debug.Print("Background Check Exception: " + ex.Message + Environment.NewLine + ex.StackTrace);
+            }
+        }
+
         private void SetAllControls(bool enabled)
         {
             foreach (Control c in Controls)
@@ -257,7 +390,7 @@ namespace DNF_Gold
         {
             Invoke(new Action(() =>
             {
-                if (!ES_AutoRefresh.Checked)
+                if (!N_AutoRefresh)
                 {
                     Label_CD.Text = "∞";
                 }
@@ -271,12 +404,15 @@ namespace DNF_Gold
         int seed = 0;
         private string RandomButton()
         {
-            switch (new Random(seed++).Next(0, 3))
+            switch (new Random(seed++).Next(0, 6))
             {
                 case 0: return "马上剁手";
                 case 1: return "再来五北";
                 case 2: return "我要氪金";
                 case 3: return "借我捌万";
+                case 4: return "最后一百";
+                case 5: return "我还能充";
+                case 6: return "充满七万";
             }
 
             return "";
@@ -288,6 +424,9 @@ namespace DNF_Gold
             {
                 try
                 {
+                    if (ItemsList.Rows[e.RowIndex].Cells["Action"].Value.ToString().Equals("已被购买"))
+                        return;
+
                     var url = ItemsList.Rows[e.RowIndex].Cells["pBLink"].Value.ToString();
                     Process.Start(url);
                 }
@@ -350,7 +489,7 @@ namespace DNF_Gold
             }.Start();
         }
 
-        private void ES_Notifaction_Click(object sender, EventArgs e)
+        private void ES_Setting_Click(object sender, EventArgs e)
         {
             if (stsUI.ShowDialog(this) == DialogResult.OK)
             {
@@ -358,17 +497,9 @@ namespace DNF_Gold
             }
         }
 
-        private void ES_AutoUpdateOnChecked(object sender, EventArgs e)
-        {
-            if (ES_AutoRefresh.Checked)
-            {
-                tickTimer = 30;
-            }
-        }
-
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
-            if (ES_KeepAlive.Checked)
+            if (N_Background)
             {
                 e.Cancel = true;
                 myHandle = Process.GetCurrentProcess().MainWindowHandle;
@@ -432,6 +563,7 @@ namespace DNF_Gold
 
                     ["ES_DD373"] = true,
                     ["ES_UU898"] = true,
+                    ["ES_EE979"] = true,
 
                     ["AutoRefresh"] = true,
                     ["BackGround"] = false,
@@ -454,6 +586,7 @@ namespace DNF_Gold
 
                     ["ES_DD373"] = Ini2Bool("DNF-Gold.Enabled", "DD373"),
                     ["ES_UU898"] = Ini2Bool("DNF-Gold.Enabled", "UU898"),
+                    ["ES_EE979"] = Ini2Bool("DNF-Gold.Enabled", "EE979"),
 
                     ["AutoRefresh"] = Ini2Bool("DNF-Gold.Enabled", "AutoRefresh"),
                     ["BackGround"] = Ini2Bool("DNF-Gold.Enabled", "BackgroundWorker"),
@@ -517,9 +650,10 @@ namespace DNF_Gold
 
             ES_DD373.Checked = (bool)conf["ES_DD373"];
             ES_UU898.Checked = (bool)conf["ES_UU898"];
+            ES_EE979.Checked = (bool)conf["ES_EE979"];
 
-            ES_AutoRefresh.Checked = (bool)conf["AutoRefresh"];
-            ES_KeepAlive.Checked = (bool)conf["BackGround"];
+            N_AutoRefresh = (bool)conf["AutoRefresh"];
+            N_Background = (bool)conf["BackGround"];
 
             N_Enabled = (bool)conf["N_Enabled"];
             N_MaxPrice = (float)conf["N_MaxPrice"];
@@ -533,9 +667,10 @@ namespace DNF_Gold
 
             Bool2Ini("DNF-Gold.Enabled", "DD373", ES_DD373.Checked);
             Bool2Ini("DNF-Gold.Enabled", "UU898", ES_UU898.Checked);
+            Bool2Ini("DNF-Gold.Enabled", "EE979", ES_EE979.Checked);
 
-            Bool2Ini("DNF-Gold.Enabled", "AutoRefresh", ES_AutoRefresh.Checked);
-            Bool2Ini("DNF-Gold.Enabled", "BackgroundWorker", ES_KeepAlive.Checked);
+            Bool2Ini("DNF-Gold.Enabled", "AutoRefresh", N_AutoRefresh);
+            Bool2Ini("DNF-Gold.Enabled", "BackgroundWorker", N_Background);
 
             Bool2Ini("DNF-Gold.Notifaction", "Enabled", N_Enabled);
             Float2Ini("DNF-Gold.Notifaction", "MaxPrice", N_MaxPrice);

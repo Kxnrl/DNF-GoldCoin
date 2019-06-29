@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace DNF_Gold.Spider
@@ -71,8 +72,16 @@ namespace DNF_Gold.Spider
 
                     items.Add(data);
                 }
-                catch (Exception ex) { Console.WriteLine("[7881] Exception: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace); }
+                catch (Exception ex) { Debug.Print("[7881] Exception: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace); }
             }
+        }
+
+        public static bool Buyable(string link)
+        {
+            var http = new HtmlWeb();
+            var html = http.Load(link);
+            var node = html.DocumentNode.SelectSingleNode("//a[@class='disable']");
+            return node == null;
         }
 
         static Trade GetTrade(string text)

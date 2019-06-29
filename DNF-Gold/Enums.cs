@@ -2,10 +2,11 @@
 {
     public enum Sites
     {
-        Site_UU898,
+        Site_5173,
         Site_7881,
+        Site_UU898,
         Site_DD373,
-        Site_5173
+        Site_EE979
     }
 
     public enum Trade

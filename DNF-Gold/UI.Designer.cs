@@ -53,11 +53,10 @@
             this.ES_DD373 = new System.Windows.Forms.CheckBox();
             this.ES_Refresh = new System.Windows.Forms.Button();
             this.Group_Site = new System.Windows.Forms.GroupBox();
+            this.ES_EE979 = new System.Windows.Forms.CheckBox();
             this.Label_WARN = new System.Windows.Forms.Label();
             this.Label_Kxnrl = new System.Windows.Forms.Label();
-            this.ES_Notifaction = new System.Windows.Forms.Button();
-            this.ES_AutoRefresh = new System.Windows.Forms.CheckBox();
-            this.ES_KeepAlive = new System.Windows.Forms.CheckBox();
+            this.ES_Setting = new System.Windows.Forms.Button();
             this.Label_CD = new System.Windows.Forms.Label();
             this.BG_Notifaction = new System.Windows.Forms.NotifyIcon(this.components);
             this.ES_Arena = new System.Windows.Forms.ComboBox();
@@ -231,7 +230,7 @@
             // 
             this.ES_7881.Checked = true;
             this.ES_7881.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ES_7881.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F);
+            this.ES_7881.Font = new System.Drawing.Font("Bahnschrift", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ES_7881.Location = new System.Drawing.Point(5, 20);
             this.ES_7881.Name = "ES_7881";
             this.ES_7881.Size = new System.Drawing.Size(50, 25);
@@ -244,7 +243,7 @@
             // 
             this.ES_5173.Checked = true;
             this.ES_5173.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ES_5173.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F);
+            this.ES_5173.Font = new System.Drawing.Font("Bahnschrift", 8.25F);
             this.ES_5173.Location = new System.Drawing.Point(55, 20);
             this.ES_5173.Name = "ES_5173";
             this.ES_5173.Size = new System.Drawing.Size(50, 25);
@@ -257,7 +256,7 @@
             // 
             this.ES_UU898.Checked = true;
             this.ES_UU898.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ES_UU898.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F);
+            this.ES_UU898.Font = new System.Drawing.Font("Bahnschrift", 8.25F);
             this.ES_UU898.Location = new System.Drawing.Point(165, 20);
             this.ES_UU898.Name = "ES_UU898";
             this.ES_UU898.Size = new System.Drawing.Size(60, 25);
@@ -270,7 +269,7 @@
             // 
             this.ES_DD373.Checked = true;
             this.ES_DD373.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ES_DD373.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ES_DD373.Font = new System.Drawing.Font("Bahnschrift", 8.25F);
             this.ES_DD373.Location = new System.Drawing.Point(105, 20);
             this.ES_DD373.Name = "ES_DD373";
             this.ES_DD373.Size = new System.Drawing.Size(60, 25);
@@ -286,22 +285,36 @@
             this.ES_Refresh.Name = "ES_Refresh";
             this.ES_Refresh.Size = new System.Drawing.Size(75, 23);
             this.ES_Refresh.TabIndex = 5;
-            this.ES_Refresh.Text = "立即刷新";
+            this.ES_Refresh.Text = "刷新";
             this.ES_Refresh.UseVisualStyleBackColor = true;
             this.ES_Refresh.Click += new System.EventHandler(this.ES_Refresh_Click);
             // 
             // Group_Site
             // 
+            this.Group_Site.Controls.Add(this.ES_EE979);
             this.Group_Site.Controls.Add(this.ES_UU898);
             this.Group_Site.Controls.Add(this.ES_DD373);
             this.Group_Site.Controls.Add(this.ES_7881);
             this.Group_Site.Controls.Add(this.ES_5173);
             this.Group_Site.Location = new System.Drawing.Point(12, 8);
             this.Group_Site.Name = "Group_Site";
-            this.Group_Site.Size = new System.Drawing.Size(226, 49);
+            this.Group_Site.Size = new System.Drawing.Size(290, 49);
             this.Group_Site.TabIndex = 6;
             this.Group_Site.TabStop = false;
             this.Group_Site.Text = "勾选以加入比价列表";
+            // 
+            // ES_EE979
+            // 
+            this.ES_EE979.Checked = true;
+            this.ES_EE979.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ES_EE979.Font = new System.Drawing.Font("Bahnschrift", 8.25F);
+            this.ES_EE979.Location = new System.Drawing.Point(225, 20);
+            this.ES_EE979.Name = "ES_EE979";
+            this.ES_EE979.Size = new System.Drawing.Size(60, 25);
+            this.ES_EE979.TabIndex = 5;
+            this.ES_EE979.Text = "EE979";
+            this.ES_EE979.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ES_EE979.UseVisualStyleBackColor = true;
             // 
             // Label_WARN
             // 
@@ -309,9 +322,9 @@
             this.Label_WARN.Font = new System.Drawing.Font("微软雅黑 Light", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Label_WARN.Location = new System.Drawing.Point(-3, 307);
             this.Label_WARN.Name = "Label_WARN";
-            this.Label_WARN.Size = new System.Drawing.Size(299, 13);
+            this.Label_WARN.Size = new System.Drawing.Size(204, 13);
             this.Label_WARN.TabIndex = 7;
-            this.Label_WARN.Text = "本软件仅提供比价技术服务，不承担任何交易风险担保或纠纷调解义务";
+            this.Label_WARN.Text = "本软件仅提供比价技术,不承担任何交易风险担保.";
             this.Label_WARN.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.Label_WARN.Click += new System.EventHandler(this.Label_WARN_Click);
             // 
@@ -328,43 +341,16 @@
             this.Label_Kxnrl.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             this.Label_Kxnrl.Click += new System.EventHandler(this.Label_Kxnrl_Click);
             // 
-            // ES_Notifaction
+            // ES_Setting
             // 
-            this.ES_Notifaction.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ES_Notifaction.Location = new System.Drawing.Point(432, 12);
-            this.ES_Notifaction.Name = "ES_Notifaction";
-            this.ES_Notifaction.Size = new System.Drawing.Size(75, 23);
-            this.ES_Notifaction.TabIndex = 9;
-            this.ES_Notifaction.Text = "通知设置";
-            this.ES_Notifaction.UseVisualStyleBackColor = true;
-            this.ES_Notifaction.Click += new System.EventHandler(this.ES_Notifaction_Click);
-            // 
-            // ES_AutoRefresh
-            // 
-            this.ES_AutoRefresh.Checked = true;
-            this.ES_AutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ES_AutoRefresh.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F);
-            this.ES_AutoRefresh.Location = new System.Drawing.Point(309, 12);
-            this.ES_AutoRefresh.Name = "ES_AutoRefresh";
-            this.ES_AutoRefresh.Size = new System.Drawing.Size(67, 25);
-            this.ES_AutoRefresh.TabIndex = 10;
-            this.ES_AutoRefresh.Text = "自动刷新";
-            this.ES_AutoRefresh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.ES_AutoRefresh.UseVisualStyleBackColor = true;
-            this.ES_AutoRefresh.CheckedChanged += new System.EventHandler(this.ES_AutoUpdateOnChecked);
-            // 
-            // ES_KeepAlive
-            // 
-            this.ES_KeepAlive.Checked = true;
-            this.ES_KeepAlive.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ES_KeepAlive.Font = new System.Drawing.Font("微软雅黑 Light", 7.5F);
-            this.ES_KeepAlive.Location = new System.Drawing.Point(309, 34);
-            this.ES_KeepAlive.Name = "ES_KeepAlive";
-            this.ES_KeepAlive.Size = new System.Drawing.Size(68, 25);
-            this.ES_KeepAlive.TabIndex = 11;
-            this.ES_KeepAlive.Text = "保持后台";
-            this.ES_KeepAlive.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.ES_KeepAlive.UseVisualStyleBackColor = true;
+            this.ES_Setting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ES_Setting.Location = new System.Drawing.Point(432, 12);
+            this.ES_Setting.Name = "ES_Setting";
+            this.ES_Setting.Size = new System.Drawing.Size(75, 23);
+            this.ES_Setting.TabIndex = 9;
+            this.ES_Setting.Text = "设置";
+            this.ES_Setting.UseVisualStyleBackColor = true;
+            this.ES_Setting.Click += new System.EventHandler(this.ES_Setting_Click);
             // 
             // Label_CD
             // 
@@ -388,9 +374,9 @@
             this.ES_Arena.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ES_Arena.Font = new System.Drawing.Font("微软雅黑 Light", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.ES_Arena.FormattingEnabled = true;
-            this.ES_Arena.Location = new System.Drawing.Point(244, 23);
+            this.ES_Arena.Location = new System.Drawing.Point(308, 23);
             this.ES_Arena.Name = "ES_Arena";
-            this.ES_Arena.Size = new System.Drawing.Size(49, 25);
+            this.ES_Arena.Size = new System.Drawing.Size(68, 25);
             this.ES_Arena.TabIndex = 13;
             // 
             // Label_SourceCode
@@ -398,7 +384,7 @@
             this.Label_SourceCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Label_SourceCode.Font = new System.Drawing.Font("微软雅黑 Light", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Label_SourceCode.ForeColor = System.Drawing.Color.DeepSkyBlue;
-            this.Label_SourceCode.Location = new System.Drawing.Point(326, 307);
+            this.Label_SourceCode.Location = new System.Drawing.Point(264, 307);
             this.Label_SourceCode.Name = "Label_SourceCode";
             this.Label_SourceCode.Size = new System.Drawing.Size(80, 13);
             this.Label_SourceCode.TabIndex = 14;
@@ -414,9 +400,7 @@
             this.Controls.Add(this.Label_SourceCode);
             this.Controls.Add(this.ES_Arena);
             this.Controls.Add(this.Label_CD);
-            this.Controls.Add(this.ES_KeepAlive);
-            this.Controls.Add(this.ES_AutoRefresh);
-            this.Controls.Add(this.ES_Notifaction);
+            this.Controls.Add(this.ES_Setting);
             this.Controls.Add(this.Label_Kxnrl);
             this.Controls.Add(this.Label_WARN);
             this.Controls.Add(this.Group_Site);
@@ -448,9 +432,7 @@
         private System.Windows.Forms.GroupBox Group_Site;
         private System.Windows.Forms.Label Label_WARN;
         private System.Windows.Forms.Label Label_Kxnrl;
-        private System.Windows.Forms.Button ES_Notifaction;
-        private System.Windows.Forms.CheckBox ES_AutoRefresh;
-        private System.Windows.Forms.CheckBox ES_KeepAlive;
+        private System.Windows.Forms.Button ES_Setting;
         private System.Windows.Forms.Label Label_CD;
         private System.Windows.Forms.NotifyIcon BG_Notifaction;
         private System.Windows.Forms.DataGridViewTextBoxColumn pGUID;
@@ -465,6 +447,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn pBLink;
         private System.Windows.Forms.ComboBox ES_Arena;
         private System.Windows.Forms.Label Label_SourceCode;
+        private System.Windows.Forms.CheckBox ES_EE979;
     }
 }
 

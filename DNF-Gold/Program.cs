@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DNF_Gold
@@ -37,19 +38,8 @@ namespace DNF_Gold
             }
             catch { Environment.Exit(-1); }
 
-            // 统计追踪
-            new Thread(PostUserInfo)
-            {
-                Priority = ThreadPriority.Lowest,
-                IsBackground = true
-            }.Start();
-
-            // 检查更新
-            new Thread(CheckVersion)
-            {
-                Priority = ThreadPriority.Lowest,
-                IsBackground = true
-            }.Start();
+            Task.Run(() => PostUserInfo());// 统计追踪
+            Task.Run(() => CheckVersion());// 检查更新
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -63,8 +53,13 @@ namespace DNF_Gold
                 var filename = new AssemblyName(e.Name).Name;
                 if (filename.Equals("HtmlAgilityPack"))
                 {
-                    Console.WriteLine("Redirect {0} to local binary.", Path.GetFileName(filename));
+                    Debug.Print("Redirect {0} to local binary.", Path.GetFileName(filename));
                     return Assembly.Load(Properties.Resources.HtmlAgilityPack);
+                }
+                if (filename.Equals("Newtonsoft.Json"))
+                {
+                    Debug.Print("Redirect {0} to local binary.", Path.GetFileName(filename));
+                    return Assembly.Load(Properties.Resources.Newtonsoft_Json);
                 }
             }
             catch (Exception ex)
@@ -85,13 +80,13 @@ namespace DNF_Gold
 
                     http.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     http.UploadValues("https://api.kxnrl.com/DNF/GoldCoins/IStats/v1/", "POST", new NameValueCollection
-                {
-                    { "ip", ip },
-                    { "vs", Assembly.GetEntryAssembly().GetName().Version.ToString() }
-                });
+                    {
+                        { "ip", ip },
+                        { "vs", Assembly.GetEntryAssembly().GetName().Version.ToString() }
+                    });
                 }
             }
-            catch (Exception e) { Console.WriteLine("[PostUserInfo] Exception: {0}", e.Message); }
+            catch (Exception e) { Debug.Print("[PostUserInfo] Exception: {0}", e.Message); }
         }
 
         static void CheckVersion()
@@ -108,7 +103,7 @@ namespace DNF_Gold
                     }
                 }
             }
-            catch (Exception e) { Console.WriteLine("[CheckVersion] Exception: {0}", e.Message); }
+            catch (Exception e) { Debug.Print("[CheckVersion] Exception: {0}", e.Message); }
         }
     }
 }

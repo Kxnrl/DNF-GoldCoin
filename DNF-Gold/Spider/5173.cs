@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -31,6 +32,7 @@ namespace DNF_Gold.Spider
         public static void FetchData(Arena arena, List<ItemData> items)
         {
             var http = new HtmlWeb();
+            // 奇葩网站
             http.OverrideEncoding = Encoding.GetEncoding("gb2312");
             var html = http.Load(GetURL(arena));
             var node = html.DocumentNode.SelectNodes("//div[@class='sin_pdlbox']");
@@ -71,8 +73,16 @@ namespace DNF_Gold.Spider
 
                     items.Add(data);
                 }
-                catch (Exception ex) { Console.WriteLine("[5173] Exception: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace); }
+                catch (Exception ex) { Debug.Print("[5173] Exception: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace); }
             }
+        }
+
+        public static bool Buyable(string link)
+        {
+            var http = new HtmlWeb();
+            var html = http.Load(link);
+            var node = html.DocumentNode.SelectSingleNode("//div[@id='divNotBuy']");
+            return node == null;
         }
 
         static Trade GetTrade(string text)
