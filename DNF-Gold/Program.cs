@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
@@ -38,12 +39,31 @@ namespace DNF_Gold
             }
             catch { Environment.Exit(-1); }
 
-            Task.Run(() => PostUserInfo());// 统计追踪
-            Task.Run(() => CheckVersion());// 检查更新
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UI());
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
+            Application.ThreadException += new ThreadExceptionEventHandler(ThreadException);
+
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledException);
+
+            var form = new UI();
+
+            Task.Run(() => PostUserInfo(form)); // 统计追踪
+            Task.Run(() => CheckVersion(form)); // 检查更新
+
+            Application.Run(form);
+        }
+
+        private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            Debug.Print("UnhandledException: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace);
+        }
+
+        private static void ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            var ex = e.Exception as Exception;
+            Debug.Print("ThreadException: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace);
         }
 
         private static Assembly AssemblyResolve(object sender, ResolveEventArgs e)
@@ -70,7 +90,7 @@ namespace DNF_Gold
             return null;
         }
 
-        static void PostUserInfo()
+        static void PostUserInfo(UI ui)
         {
             try
             {
@@ -89,17 +109,25 @@ namespace DNF_Gold
             catch (Exception e) { Debug.Print("[PostUserInfo] Exception: {0}", e.Message); }
         }
 
-        static void CheckVersion()
+        static void CheckVersion(UI ui)
         {
             try
             {
                 using (var http = new WebClient())
                 {
-                    var data = http.DownloadString("https://api.kxnrl.com/DNF/GoldCoins/ICheckVersion/v1/?v=" + Assembly.GetEntryAssembly().GetName().Version.ToString());
-                    if (data.Contains("Out-Of-Date"))
+                    var json = http.DownloadString("https://api.kxnrl.com/DNF/GoldCoins/ICheckVersion/v1/?v=" + Assembly.GetEntryAssembly().GetName().Version.ToString());
+                    var data = JObject.Parse(json);
+                    if (data["Message"].ToString().Contains("Out-Of-Date"))
                     {
-                        MessageBox.Show("当前版本已过期");
-                        Process.Start("https://github.com/Kxnrl/DNF-GoldCoin/releases");
+                        ui.Invoke(new Action(() =>
+                        {
+                            if (MessageBox.Show(data["Message"] + Environment.NewLine + "点击是退出并更新", "发现新版本 v" + data["Version"]["Major"] + "." + data["Version"]["Minor"] + "." + data["Version"]["Build"]) == DialogResult.Yes)
+                            {
+                                Process.Start("https://github.com/Kxnrl/DNF-GoldCoin/releases");
+                                Environment.Exit(1);
+                            }
+                        }));
+                        Debug.Print("Cancel update");
                     }
                 }
             }

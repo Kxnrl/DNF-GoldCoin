@@ -9,6 +9,7 @@ namespace DNF_Gold.Spider
     class S7881
     {
         private const string schema = "https";
+        private static Dictionary<string, string> GuidDict = new Dictionary<string, string>();
 
         private static string GetURL(Arena arena)
         {
@@ -67,13 +68,23 @@ namespace DNF_Gold.Spider
                         Arena = area, //arena,
                         bLink = schema + "://" + "search.7881.com" + ahref,
                         Sites = Sites.Site_7881,
-                        pGUID = Guid.NewGuid().ToString()
+                        pGUID = RepairGuid(ahref)
                     };
 
                     items.Add(data);
                 }
                 catch (Exception ex) { Debug.Print("[7881] Exception: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace); }
             }
+        }
+
+        private static string RepairGuid(string unique)
+        {
+            if (!GuidDict.ContainsKey(unique))
+            {
+                // creation
+                GuidDict.Add(unique, Guid.NewGuid().ToString());
+            }
+            return GuidDict[unique];
         }
 
         public static bool Buyable(string link)

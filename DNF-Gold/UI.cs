@@ -11,25 +11,35 @@ namespace DNF_Gold
 {
     public partial class UI : Form
     {
+        #region tray
         ContextMenu notifyMenu;
         MenuItem showHide;
         MenuItem exitButton;
-
-        private System.Windows.Forms.Timer refreshTimer = new System.Windows.Forms.Timer();
+        #endregion
+        #region global variables
+        private bool closing = false;
         private bool beginUpdate = false;
         private static string configFile;
 
         private static IntPtr myHandle;
         private static SettingsUI stsUI;
-
+        #endregion
+        #region timer
+        // timer handler
+        private System.Windows.Forms.Timer refreshTimer = new System.Windows.Forms.Timer();
         public static uint tickTimer = 30u;
-
+        #endregion
+        #region configs
         public static float N_MaxPrice = 0.0f;
         public static float N_MinRatio = 30.0f;
         public static bool N_Enabled = false;
         public static bool N_Background = false;
         public static bool N_AutoRefresh = false;
-   
+        public static bool N_AllowTrade_T = true;
+        public static bool N_AllowTrade_M = true;
+        public static bool N_AllowTrade_S = true;
+        #endregion
+
         static Dictionary<string, ItemData> ItemDict = new Dictionary<string, ItemData>();
 
         public UI()
@@ -49,7 +59,7 @@ namespace DNF_Gold
         {
             List<string> sellOut = new List<string>();
 
-            while (true)
+            while (!closing)
             {
                 BeginCheckPrice(sellOut);
             }
@@ -65,6 +75,9 @@ namespace DNF_Gold
 
         private void InitializeTable()
         {
+            ItemsList.RowsDefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
+            ItemsList.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
+            ItemsList.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Transparent;
             ItemsList.RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             ItemsList.Columns["pCoins"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             ItemsList.Columns["pRecvs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
@@ -123,7 +136,10 @@ namespace DNF_Gold
                 Priority = ThreadPriority.Lowest,
                 Name = "Check Buyable"
             }.Start();
+        }
 
+        private void UI_Shown(object sender, EventArgs e)
+        {
             ES_Arena.SelectedIndexChanged += new EventHandler(ArenaOnChanged);
         }
 
@@ -149,6 +165,8 @@ namespace DNF_Gold
 
         private void RefreshData()
         {
+            if (closing) return;
+
             beginUpdate = true;
 
             var arena = Arena.跨1;
@@ -262,11 +280,29 @@ namespace DNF_Gold
                     // 过滤异常不能交易的金币?
                     // 黑商你妈死了?
                     // 哄抬你妈的金价呢?
-                    if (item.Price >= 10000f || item.Ratio >= 100.0)
+                    if (item.Price >= 10000f || item.Ratio >= 100f)
                     {
                         continue;
                     }
 
+                    // 交易设置过滤
+                    if (item.Trade is Trade.交易 && !N_AllowTrade_T)
+                    {
+                        // 不允许当面交易
+                        continue;
+                    }
+                    if (item.Trade is Trade.邮寄 && !N_AllowTrade_M)
+                    {
+                        // 不允许邮寄交易
+                        continue;
+                    }
+                    if (item.Trade is Trade.拍卖 && !N_AllowTrade_S)
+                    {
+                        // 不允许拍卖交易
+                        continue;
+                    }
+
+                    // 通知中心
                     if (N_Enabled &&
                         item.Price <= N_MaxPrice &&
                         item.Ratio >= N_MinRatio)
@@ -281,6 +317,8 @@ namespace DNF_Gold
 
                     ItemDict[item.pGUID] = item;
                     ItemsList.Rows.Add(item.pGUID, item.Coins, (float)(item.Coins * (item.Trade == Trade.邮寄 ? 0.95 : 0.97)), item.Price, item.Ratio, item.Arena, Enum.GetName(typeof(Trade), item.Trade), Enum.GetName(typeof(Sites), item.Sites).Replace("Site_", ""), RandomButton(), item.bLink);
+
+
                 }
 
                 if (count > 0)
@@ -302,12 +340,17 @@ namespace DNF_Gold
 
         private void BeginCheckPrice(List<string> sellOut)
         {
+            if (closing) return;
+
             var list = new List<string>();
 
             Invoke(new Action(() =>
             {
-                for (int index = 0; index < ItemsList.Rows.Count && index < 9; ++index)
+                for (int index = 0; index < ItemsList.Rows.Count; ++index)
                 {
+                    if (!ItemsList.Rows[index].Displayed)
+                        continue;
+
                     var pGuid = ItemsList.Rows[index].Cells["pGUID"].Value.ToString();
 
                     if (string.IsNullOrEmpty(pGuid) || sellOut.Contains(pGuid))
@@ -432,6 +475,10 @@ namespace DNF_Gold
                 }
                 catch { }
             }
+            else
+            {
+                ItemsList.ClearSelection();
+            }
         }
 
         private void CheckSourceCode(object sender, EventArgs e)
@@ -491,35 +538,71 @@ namespace DNF_Gold
 
         private void ES_Setting_Click(object sender, EventArgs e)
         {
+            if (beginUpdate)
+                return;
+
             if (stsUI.ShowDialog(this) == DialogResult.OK)
             {
                 SaveConfigs();
+
+                if (!beginUpdate)
+                {
+                    new Thread(RefreshData)
+                    {
+                        IsBackground = true,
+                        Name = "Update Thread",
+                        Priority = ThreadPriority.BelowNormal
+                    }.Start();
+                }
             }
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
+            e.Cancel = true;
+
             if (N_Background)
             {
-                e.Cancel = true;
                 myHandle = Process.GetCurrentProcess().MainWindowHandle;
                 Win32Api.Window.ShowWindow(myHandle, Win32Api.Window.SW_HIDE);
                 BG_Notifaction.BalloonTipTitle = "DNF金币比价器";
                 BG_Notifaction.BalloonTipText = "现在已经开始后台工作啦.~";
                 BG_Notifaction.ShowBalloonTip(3000);
             }
-            else
+            else if (!closing)
             {
                 BG_Notifaction.Visible = false;
                 BG_Notifaction.Icon = null;
                 BG_Notifaction.Dispose();
-                Thread.Sleep(100);
+
+                closing = true;
+
+                new Thread(() =>
+                {
+                    Thread.Sleep(1000);
+                    while (beginUpdate)
+                    {
+                        Thread.Sleep(100);
+                    }
+                    Invoke(new Action(() =>
+                    {
+                        Close();
+                        Dispose();
+                        Environment.ExitCode = 10086;
+                    }));
+                })
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.Lowest,
+                    Name = "Cleaner thread"
+                }.Start();
             }
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e)
         {
             SaveConfigs();
+            Debug.Print("OnFormClosed");
         }
 
         private void OnFormResized(object sender, EventArgs e)
@@ -544,6 +627,43 @@ namespace DNF_Gold
             Win32Api.Window.ShowWindow(myHandle, Win32Api.Window.SW_SHOW);
         }
 
+        #region Ini helper
+        private object Ini2Enum(string section, string key, Type type)
+        {
+            var data = Win32Api.Profile.GetIniSectionValue(configFile, section, key, "跨1");
+            return Enum.Parse(type, data);
+        }
+
+        private void Enum2Ini(string section, string key, Type type, object val)
+        {
+            Win32Api.Profile.SetIniSectionValue(configFile, section, key, Enum.GetName(type, val));
+        }
+
+        private bool Ini2Bool(string section, string key, bool def = false)
+        {
+            var data = Win32Api.Profile.GetIniSectionValue(configFile, section, key);
+            return string.IsNullOrEmpty(data) ? def : data.Equals("true");
+        }
+
+        private void Bool2Ini(string section, string key, bool value)
+        {
+            Win32Api.Profile.SetIniSectionValue(configFile, section, key, value ? "true" : "false");
+        }
+
+        private float Ini2Float(string section, string key, float def = 0f)
+        {
+            var data = Win32Api.Profile.GetIniSectionValue(configFile, section, key);
+            if (float.TryParse(data, out float ret))
+                return ret;
+            return def;
+        }
+
+        private void Float2Ini(string section, string key, float value)
+        {
+            Win32Api.Profile.SetIniSectionValue(configFile, section, key, value.ToString("N2"));
+        }
+        #endregion
+        #region config loader
         private void InitializeConfings()
         {
             configFile = Path.Combine(Program.baseFolder, "dnf.conf");
@@ -570,7 +690,11 @@ namespace DNF_Gold
 
                     ["N_Enabled"] = false,
                     ["N_MaxPrice"] = 2000.0f,
-                    ["N_MinRatio"] = 50.0f
+                    ["N_MinRatio"] = 50.0f,
+
+                    ["N_AllowTrade_T"] = true,
+                    ["N_AllowTrade_S"] = true,
+                    ["N_AllowTrade_M"] = true,
                 });
 
                 SaveConfigs();
@@ -581,56 +705,25 @@ namespace DNF_Gold
                 {
                     ["ES_Arena"] = Ini2Enum("DNF-Gold.Global", "Arena", typeof(Arena)),
 
-                    ["ES_7881"] = Ini2Bool("DNF-Gold.Enabled", "7881"),
-                    ["ES_5173"] = Ini2Bool("DNF-Gold.Enabled", "5173"),
+                    ["ES_7881"] = Ini2Bool("DNF-Gold.Enabled", "7881", true),
+                    ["ES_5173"] = Ini2Bool("DNF-Gold.Enabled", "5173", true),
 
-                    ["ES_DD373"] = Ini2Bool("DNF-Gold.Enabled", "DD373"),
-                    ["ES_UU898"] = Ini2Bool("DNF-Gold.Enabled", "UU898"),
-                    ["ES_EE979"] = Ini2Bool("DNF-Gold.Enabled", "EE979"),
+                    ["ES_DD373"] = Ini2Bool("DNF-Gold.Enabled", "DD373", true),
+                    ["ES_UU898"] = Ini2Bool("DNF-Gold.Enabled", "UU898", true),
+                    ["ES_EE979"] = Ini2Bool("DNF-Gold.Enabled", "EE979", true),
 
-                    ["AutoRefresh"] = Ini2Bool("DNF-Gold.Enabled", "AutoRefresh"),
-                    ["BackGround"] = Ini2Bool("DNF-Gold.Enabled", "BackgroundWorker"),
+                    ["AutoRefresh"] = Ini2Bool("DNF-Gold.Enabled", "AutoRefresh", false),
+                    ["BackGround"] = Ini2Bool("DNF-Gold.Enabled", "BackgroundWorker", false),
 
-                    ["N_Enabled"] = Ini2Bool("DNF-Gold.Notifaction", "Enabled"),
-                    ["N_MaxPrice"] = Ini2Float("DNF-Gold.Notifaction", "MaxPrice"),
-                    ["N_MinRatio"] = Ini2Float("DNF-Gold.Notifaction", "MinRatio")
+                    ["N_Enabled"] = Ini2Bool("DNF-Gold.Notifaction", "Enabled", false),
+                    ["N_MaxPrice"] = Ini2Float("DNF-Gold.Notifaction", "MaxPrice", 2000f),
+                    ["N_MinRatio"] = Ini2Float("DNF-Gold.Notifaction", "MinRatio", 55f),
+
+                    ["N_AllowTrade_T"] = Ini2Bool("DNF-Gold.TradeRules", "Face", true),
+                    ["N_AllowTrade_S"] = Ini2Bool("DNF-Gold.TradeRules", "Sale", true),
+                    ["N_AllowTrade_M"] = Ini2Bool("DNF-Gold.TradeRules", "Mail", true),
                 });
             }
-        }
-
-        private object Ini2Enum(string section, string key, Type type)
-        {
-            var data = Win32Api.Profile.GetIniSectionValue(configFile, section, key, "跨1");
-            return Enum.Parse(type, data);
-        }
-
-        private void Enum2Ini(string section, string key, Type type, object val)
-        {
-            Win32Api.Profile.SetIniSectionValue(configFile, section, key, Enum.GetName(type, val));
-        }
-
-        private bool Ini2Bool(string section, string key)
-        {
-            var data = Win32Api.Profile.GetIniSectionValue(configFile, section, key);
-            return data.Equals("true");
-        }
-
-        private void Bool2Ini(string section, string key, bool value)
-        {
-            Win32Api.Profile.SetIniSectionValue(configFile, section, key, value ? "true" : "false");
-        }
-
-        private float Ini2Float(string section, string key)
-        {
-            var data = Win32Api.Profile.GetIniSectionValue(configFile, section, key);
-            if (float.TryParse(data, out float ret))
-                return ret;
-            return 0.0f;
-        }
-
-        private void Float2Ini(string section, string key, float value)
-        {
-            Win32Api.Profile.SetIniSectionValue(configFile, section, key, value.ToString("N2"));
         }
 
         private void ImportConfigs(Dictionary<string, object> conf)
@@ -658,6 +751,10 @@ namespace DNF_Gold
             N_Enabled = (bool)conf["N_Enabled"];
             N_MaxPrice = (float)conf["N_MaxPrice"];
             N_MinRatio = (float)conf["N_MinRatio"];
+
+            N_AllowTrade_T = (bool)conf["N_AllowTrade_T"];
+            N_AllowTrade_S = (bool)conf["N_AllowTrade_S"];
+            N_AllowTrade_M = (bool)conf["N_AllowTrade_M"];
         }
 
         private void SaveConfigs()
@@ -673,8 +770,13 @@ namespace DNF_Gold
             Bool2Ini("DNF-Gold.Enabled", "BackgroundWorker", N_Background);
 
             Bool2Ini("DNF-Gold.Notifaction", "Enabled", N_Enabled);
-            Float2Ini("DNF-Gold.Notifaction", "MaxPrice", N_MaxPrice);
+            Float2Ini("DNF-Gold.Notifaction", "N_MaxPrice", N_MaxPrice);
             Float2Ini("DNF-Gold.Notifaction", "MinRatio", N_MinRatio);
+
+            Bool2Ini("DNF-Gold.TradeRules", "Face", N_AllowTrade_T);
+            Bool2Ini("DNF-Gold.TradeRules", "Sale", N_AllowTrade_S);
+            Bool2Ini("DNF-Gold.TradeRules", "Mail", N_AllowTrade_M);
         }
+        #endregion
     }
 }

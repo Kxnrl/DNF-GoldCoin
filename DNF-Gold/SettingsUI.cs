@@ -26,6 +26,9 @@ namespace DNF_Gold
             UI.N_Background = ES_CloseOnTray.Checked;
             UI.N_MaxPrice = (float)ES_MaxPrice.Value;
             UI.N_MinRatio = (float)ES_MinRatio.Value;
+            UI.N_AllowTrade_M = ES_Trade_M.Checked;
+            UI.N_AllowTrade_T = ES_Trade_T.Checked;
+            UI.N_AllowTrade_S = ES_Trade_S.Checked;
             ((UI)Owner).Activate();
             Close();
         }
@@ -37,6 +40,9 @@ namespace DNF_Gold
             ES_MinRatio.Value = (decimal)UI.N_MinRatio;
             ES_AutoRefresh.Checked = UI.N_AutoRefresh;
             ES_CloseOnTray.Checked = UI.N_Background;
+            ES_Trade_M.Checked = UI.N_AllowTrade_M;
+            ES_Trade_S.Checked = UI.N_AllowTrade_S;
+            ES_Trade_T.Checked = UI.N_AllowTrade_T;
         }
     }
 }

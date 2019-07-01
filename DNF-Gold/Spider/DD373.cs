@@ -9,6 +9,7 @@ namespace DNF_Gold.Spider
     class DD373
     {
         private const string schema = "https";
+        private static Dictionary<string, string> GuidDict = new Dictionary<string, string>();
 
         private static string GetURL(Arena arena)
         {
@@ -43,7 +44,7 @@ namespace DNF_Gold.Spider
 
                     var ahref = lists[0].SelectSingleNode("./span").SelectNodes("./a")[1].Attributes["href"].Value;
                     var title = lists[0].SelectSingleNode("./span").SelectNodes("./a")[1].Attributes["title"].Value;
-                  //var arena = lists[0].SelectSingleNode("./div[@class='qufu']").SelectNodes("./a")[2].Attributes["title"].Value;
+                    //var arena = lists[0].SelectSingleNode("./div[@class='qufu']").SelectNodes("./a")[2].Attributes["title"].Value;
                     var regex = new Regex(@"\d{4,}").Match(title.Split('=')[0]);
 
                     if (!regex.Success)
@@ -65,13 +66,23 @@ namespace DNF_Gold.Spider
                         Arena = area, //arena,
                         bLink = schema + "://" + "www.dd373.com" + ahref,
                         Sites = Sites.Site_DD373,
-                        pGUID = Guid.NewGuid().ToString()
+                        pGUID = RepairGuid(ahref)
                     };
 
                     items.Add(data);
                 }
                 catch (Exception ex) { Debug.Print("[DD373] Exception: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace); }
             }
+        }
+
+        private static string RepairGuid(string unique)
+        {
+            if (!GuidDict.ContainsKey(unique))
+            {
+                // creation
+                GuidDict.Add(unique, Guid.NewGuid().ToString());
+            }
+            return GuidDict[unique];
         }
 
         public static bool Buyable(string link)

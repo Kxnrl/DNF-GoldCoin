@@ -37,9 +37,14 @@
             this.ES_Confirm = new System.Windows.Forms.Button();
             this.ES_CloseOnTray = new System.Windows.Forms.CheckBox();
             this.ES_AutoRefresh = new System.Windows.Forms.CheckBox();
+            this.Group_Trade = new System.Windows.Forms.GroupBox();
+            this.ES_Trade_M = new System.Windows.Forms.CheckBox();
+            this.ES_Trade_T = new System.Windows.Forms.CheckBox();
+            this.ES_Trade_S = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.ES_MinRatio)).BeginInit();
             this.Group_HightRatio.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ES_MaxPrice)).BeginInit();
+            this.Group_Trade.SuspendLayout();
             this.SuspendLayout();
             // 
             // ES_MinRatio
@@ -130,10 +135,12 @@
             // 
             // ES_Notifaction
             // 
+            this.ES_Notifaction.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ES_Notifaction.Checked = true;
             this.ES_Notifaction.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ES_Notifaction.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ES_Notifaction.Location = new System.Drawing.Point(12, 179);
+            this.ES_Notifaction.Location = new System.Drawing.Point(12, 305);
             this.ES_Notifaction.Name = "ES_Notifaction";
             this.ES_Notifaction.Size = new System.Drawing.Size(170, 24);
             this.ES_Notifaction.TabIndex = 2;
@@ -143,8 +150,10 @@
             // 
             // ES_Confirm
             // 
+            this.ES_Confirm.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ES_Confirm.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ES_Confirm.Location = new System.Drawing.Point(12, 209);
+            this.ES_Confirm.Location = new System.Drawing.Point(12, 335);
             this.ES_Confirm.Name = "ES_Confirm";
             this.ES_Confirm.Size = new System.Drawing.Size(170, 30);
             this.ES_Confirm.TabIndex = 3;
@@ -154,10 +163,12 @@
             // 
             // ES_CloseOnTray
             // 
+            this.ES_CloseOnTray.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ES_CloseOnTray.Checked = true;
             this.ES_CloseOnTray.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ES_CloseOnTray.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ES_CloseOnTray.Location = new System.Drawing.Point(12, 149);
+            this.ES_CloseOnTray.Location = new System.Drawing.Point(12, 275);
             this.ES_CloseOnTray.Name = "ES_CloseOnTray";
             this.ES_CloseOnTray.Size = new System.Drawing.Size(170, 24);
             this.ES_CloseOnTray.TabIndex = 4;
@@ -167,10 +178,12 @@
             // 
             // ES_AutoRefresh
             // 
+            this.ES_AutoRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ES_AutoRefresh.Checked = true;
             this.ES_AutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ES_AutoRefresh.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ES_AutoRefresh.Location = new System.Drawing.Point(12, 119);
+            this.ES_AutoRefresh.Location = new System.Drawing.Point(12, 245);
             this.ES_AutoRefresh.Name = "ES_AutoRefresh";
             this.ES_AutoRefresh.Size = new System.Drawing.Size(170, 24);
             this.ES_AutoRefresh.TabIndex = 5;
@@ -178,24 +191,85 @@
             this.ES_AutoRefresh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.ES_AutoRefresh.UseVisualStyleBackColor = true;
             // 
+            // Group_Trade
+            // 
+            this.Group_Trade.Controls.Add(this.ES_Trade_S);
+            this.Group_Trade.Controls.Add(this.ES_Trade_T);
+            this.Group_Trade.Controls.Add(this.ES_Trade_M);
+            this.Group_Trade.Location = new System.Drawing.Point(12, 118);
+            this.Group_Trade.Name = "Group_Trade";
+            this.Group_Trade.Size = new System.Drawing.Size(170, 110);
+            this.Group_Trade.TabIndex = 6;
+            this.Group_Trade.TabStop = false;
+            this.Group_Trade.Text = "交易类型筛选";
+            // 
+            // ES_Trade_M
+            // 
+            this.ES_Trade_M.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ES_Trade_M.Checked = true;
+            this.ES_Trade_M.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ES_Trade_M.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ES_Trade_M.Location = new System.Drawing.Point(8, 20);
+            this.ES_Trade_M.Name = "ES_Trade_M";
+            this.ES_Trade_M.Size = new System.Drawing.Size(156, 24);
+            this.ES_Trade_M.TabIndex = 6;
+            this.ES_Trade_M.Text = "邮寄交易";
+            this.ES_Trade_M.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ES_Trade_M.UseVisualStyleBackColor = true;
+            // 
+            // ES_Trade_T
+            // 
+            this.ES_Trade_T.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ES_Trade_T.Checked = true;
+            this.ES_Trade_T.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ES_Trade_T.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ES_Trade_T.Location = new System.Drawing.Point(8, 50);
+            this.ES_Trade_T.Name = "ES_Trade_T";
+            this.ES_Trade_T.Size = new System.Drawing.Size(156, 24);
+            this.ES_Trade_T.TabIndex = 7;
+            this.ES_Trade_T.Text = "当面交易";
+            this.ES_Trade_T.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ES_Trade_T.UseVisualStyleBackColor = true;
+            // 
+            // ES_Trade_S
+            // 
+            this.ES_Trade_S.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ES_Trade_S.Checked = true;
+            this.ES_Trade_S.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ES_Trade_S.Font = new System.Drawing.Font("微软雅黑 Light", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ES_Trade_S.Location = new System.Drawing.Point(8, 80);
+            this.ES_Trade_S.Name = "ES_Trade_S";
+            this.ES_Trade_S.Size = new System.Drawing.Size(156, 24);
+            this.ES_Trade_S.TabIndex = 8;
+            this.ES_Trade_S.Text = "拍卖交易";
+            this.ES_Trade_S.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ES_Trade_S.UseVisualStyleBackColor = true;
+            // 
             // SettingsUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(194, 251);
+            this.ClientSize = new System.Drawing.Size(194, 377);
+            this.Controls.Add(this.Group_Trade);
             this.Controls.Add(this.ES_AutoRefresh);
             this.Controls.Add(this.ES_CloseOnTray);
             this.Controls.Add(this.ES_Confirm);
             this.Controls.Add(this.ES_Notifaction);
             this.Controls.Add(this.Group_HightRatio);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "SettingsUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "通知中心";
+            this.Text = "设置";
             this.Shown += new System.EventHandler(this.OnShown);
             ((System.ComponentModel.ISupportInitialize)(this.ES_MinRatio)).EndInit();
             this.Group_HightRatio.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ES_MaxPrice)).EndInit();
+            this.Group_Trade.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -211,5 +285,9 @@
         private System.Windows.Forms.Button ES_Confirm;
         private System.Windows.Forms.CheckBox ES_CloseOnTray;
         private System.Windows.Forms.CheckBox ES_AutoRefresh;
+        private System.Windows.Forms.GroupBox Group_Trade;
+        private System.Windows.Forms.CheckBox ES_Trade_S;
+        private System.Windows.Forms.CheckBox ES_Trade_T;
+        private System.Windows.Forms.CheckBox ES_Trade_M;
     }
 }

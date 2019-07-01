@@ -1,5 +1,4 @@
-﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -15,9 +14,11 @@ namespace DNF_Gold.Spider
         // 这种有良心API的网站真的好评
 
         private const string schema = "https";
+        private static Dictionary<string, string> GuidDict = new Dictionary<string, string>();
 
         const string url = "https://api.ee979.com/api/Goods/list?access_token=";
 
+#pragma warning disable 0649
         #region Item definition
         public class Item
         {
@@ -91,12 +92,14 @@ namespace DNF_Gold.Spider
             public bool IsPlatinumTrader;
         }
         #endregion
-
+        #region Response definition
         class Response
         {
             public string code;
             public List<Item> data;
         }
+        #endregion
+#pragma warning restore 0649
 
         public static void FetchData(Arena arena, List<ItemData> items)
         {
@@ -109,7 +112,7 @@ namespace DNF_Gold.Spider
                     web.Headers[HttpRequestHeader.ContentType] = "application/json";
                     web.Headers[HttpRequestHeader.Accept] = "application/json";
                     web.Headers[HttpRequestHeader.Referer] = "https://www.ee979.com/goods?ex=cro" + arena + "&g=0&o=sc-d";
-                    web.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36";
+                    web.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15";
 
                     var j = JsonConvert.SerializeObject(new JObject
                     {
@@ -153,7 +156,7 @@ namespace DNF_Gold.Spider
                             Arena = area, //arena,
                             bLink = "https://www.ee979.com/goods/" + item.GoodsSn,
                             Sites = Sites.Site_EE979,
-                            pGUID = Guid.NewGuid().ToString()
+                            pGUID = RepairGuid(item.GoodsSn)
                         };
 
                         items.Add(data);
@@ -163,10 +166,24 @@ namespace DNF_Gold.Spider
             catch (Exception ex) { Debug.Print("[EE979] Exception: {0}{1}{2}", ex.Message, Environment.NewLine, ex.StackTrace); }
         }
 
+        private static string RepairGuid(string unique)
+        {
+            if (!GuidDict.ContainsKey(unique))
+            {
+                // creation
+                GuidDict.Add(unique, Guid.NewGuid().ToString());
+            }
+            return GuidDict[unique];
+        }
+
         public static bool Buyable(string link)
         {
-            // 暂时不支持...
-            return true;
+            using (var web = new WebClient())
+            {
+                var data = web.DownloadData(link);
+                var html = Encoding.UTF8.GetString(data);
+                return !html.Contains("交易完成");
+            }
         }
 
         static Trade GetTrade(string text)

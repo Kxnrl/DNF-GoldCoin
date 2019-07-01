@@ -414,6 +414,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OnFormClosed);
             this.Load += new System.EventHandler(this.UI_Load);
+            this.Shown += new System.EventHandler(this.UI_Shown);
             this.SizeChanged += new System.EventHandler(this.OnFormResized);
             ((System.ComponentModel.ISupportInitialize)(this.ItemsList)).EndInit();
             this.Group_Site.ResumeLayout(false);
