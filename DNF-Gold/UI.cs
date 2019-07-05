@@ -75,10 +75,11 @@ namespace DNF_Gold
 
         private void InitializeTable()
         {
-            ItemsList.RowsDefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
-            ItemsList.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
-            ItemsList.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Transparent;
+            //ItemsList.RowsDefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
+            //ItemsList.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
+            //ItemsList.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Transparent;
             ItemsList.RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            ItemsList.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ItemsList.Columns["pCoins"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             ItemsList.Columns["pRecvs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             ItemsList.Columns["pPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
@@ -182,11 +183,10 @@ namespace DNF_Gold
 
             var resetEvent = new ManualResetEvent[5];
 
-            resetEvent[0] = new ManualResetEvent(false);
-            resetEvent[1] = new ManualResetEvent(false);
-            resetEvent[2] = new ManualResetEvent(false);
-            resetEvent[3] = new ManualResetEvent(false);
-            resetEvent[4] = new ManualResetEvent(false);
+            for (int e = 0; e < 5; ++e)
+            {
+                resetEvent[e] = new ManualResetEvent(false);
+            }
 
             if (ES_UU898.Checked)
             {
@@ -260,11 +260,11 @@ namespace DNF_Gold
 
             WaitHandle.WaitAll(resetEvent);
 
-            resetEvent[0].Dispose();
-            resetEvent[1].Dispose();
-            resetEvent[2].Dispose();
-            resetEvent[3].Dispose();
-            resetEvent[4].Dispose();
+            foreach (var e in resetEvent)
+            {
+                e.Close();
+                e.Dispose();
+            }
 
             Invoke(new Action(() =>
             {
@@ -317,8 +317,6 @@ namespace DNF_Gold
 
                     ItemDict[item.pGUID] = item;
                     ItemsList.Rows.Add(item.pGUID, item.Coins, (float)(item.Coins * (item.Trade == Trade.邮寄 ? 0.95 : 0.97)), item.Price, item.Ratio, item.Arena, Enum.GetName(typeof(Trade), item.Trade), Enum.GetName(typeof(Sites), item.Sites).Replace("Site_", ""), RandomButton(), item.bLink);
-
-
                 }
 
                 if (count > 0)
@@ -329,6 +327,9 @@ namespace DNF_Gold
                 }
 
                 SetAllControls(true);
+
+                ItemsList.Update();
+                ItemsList.ClearSelection();
 
                 Text = "DNF金币比价器" + "   " + "[" + Enum.GetName(typeof(Arena), arena) + "]";
             }));
@@ -477,7 +478,7 @@ namespace DNF_Gold
             }
             else
             {
-                ItemsList.ClearSelection();
+                //ItemsList.ClearSelection();
             }
         }
 
@@ -602,7 +603,6 @@ namespace DNF_Gold
         private void OnFormClosed(object sender, FormClosedEventArgs e)
         {
             SaveConfigs();
-            Debug.Print("OnFormClosed");
         }
 
         private void OnFormResized(object sender, EventArgs e)

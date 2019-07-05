@@ -331,8 +331,8 @@
             // Label_Kxnrl
             // 
             this.Label_Kxnrl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Label_Kxnrl.Font = new System.Drawing.Font("微软雅黑 Light", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Label_Kxnrl.ForeColor = System.Drawing.Color.Magenta;
+            this.Label_Kxnrl.Font = new System.Drawing.Font("微软雅黑 Light", 6F);
+            this.Label_Kxnrl.ForeColor = System.Drawing.Color.MediumOrchid;
             this.Label_Kxnrl.Location = new System.Drawing.Point(412, 305);
             this.Label_Kxnrl.Name = "Label_Kxnrl";
             this.Label_Kxnrl.Size = new System.Drawing.Size(110, 15);
@@ -382,14 +382,14 @@
             // Label_SourceCode
             // 
             this.Label_SourceCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Label_SourceCode.Font = new System.Drawing.Font("微软雅黑 Light", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Label_SourceCode.Font = new System.Drawing.Font("微软雅黑 Light", 9F);
             this.Label_SourceCode.ForeColor = System.Drawing.Color.DeepSkyBlue;
             this.Label_SourceCode.Location = new System.Drawing.Point(264, 307);
             this.Label_SourceCode.Name = "Label_SourceCode";
-            this.Label_SourceCode.Size = new System.Drawing.Size(80, 13);
+            this.Label_SourceCode.Size = new System.Drawing.Size(112, 13);
             this.Label_SourceCode.TabIndex = 14;
             this.Label_SourceCode.Text = "查看本软件源代码";
-            this.Label_SourceCode.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.Label_SourceCode.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Label_SourceCode.Click += new System.EventHandler(this.CheckSourceCode);
             // 
             // UI

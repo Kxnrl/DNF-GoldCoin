@@ -125,7 +125,7 @@ namespace DNF_Gold.Spider
                             ["orderBy"] = "scale1-desc",
                             ["extra"] = new JObject
                             {
-                                ["cross"] = "DNF跨1"
+                                ["cross"] = "DNF" + area.ToLower()
                             }
                         }
                     });
