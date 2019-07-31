@@ -7,7 +7,7 @@
     <ProjectGuid>{DD98DCAD-3D8A-4D01-A17D-B0AF79756A32}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>DNF_Gold</RootNamespace>
-    <AssemblyName>金币比价器</AssemblyName>
+    <AssemblyName>DNF-Gold</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
