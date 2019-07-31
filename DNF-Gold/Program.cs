@@ -121,7 +121,7 @@ namespace DNF_Gold
                     {
                         ui.Invoke(new Action(() =>
                         {
-                            if (MessageBox.Show(data["Message"] + Environment.NewLine + "点击是退出并更新", "发现新版本 v" + data["Version"]["Major"] + "." + data["Version"]["Minor"] + "." + data["Version"]["Build"]) == DialogResult.Yes)
+                            if (MessageBox.Show(data["Message"] + Environment.NewLine + "点击是退出并更新", "发现新版本 v" + data["Version"]["Major"] + "." + data["Version"]["Minor"] + "." + data["Version"]["Build"], MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             {
                                 Process.Start("https://github.com/Kxnrl/DNF-GoldCoin/releases");
                                 Environment.Exit(1);

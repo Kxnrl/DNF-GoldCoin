@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DNF_Gold
@@ -41,6 +42,7 @@ namespace DNF_Gold
         #endregion
 
         static Dictionary<string, ItemData> ItemDict = new Dictionary<string, ItemData>();
+        static List<string> BuyCheck = new List<string>();
 
         public UI()
         {
@@ -53,16 +55,6 @@ namespace DNF_Gold
             Icon = Properties.Resources.dfo;
 
             stsUI = new SettingsUI();
-        }
-
-        private void BackgroundRefresh()
-        {
-            List<string> sellOut = new List<string>();
-
-            while (!closing)
-            {
-                BeginCheckPrice(sellOut);
-            }
         }
 
         private void InitializeArenas()
@@ -139,6 +131,14 @@ namespace DNF_Gold
             }.Start();
         }
 
+        private void BackgroundRefresh()
+        {
+            while (!closing)
+            {
+                BeginCheckPrice();
+            }
+        }
+
         private void UI_Shown(object sender, EventArgs e)
         {
             ES_Arena.SelectedIndexChanged += new EventHandler(ArenaOnChanged);
@@ -179,92 +179,35 @@ namespace DNF_Gold
                 arena = (Arena)Enum.Parse(typeof(Arena), ES_Arena.Items[ES_Arena.SelectedIndex].ToString());
             }));
 
-            List<ItemData> items = new List<ItemData>();
-
-            var resetEvent = new ManualResetEvent[5];
-
-            for (int e = 0; e < 5; ++e)
-            {
-                resetEvent[e] = new ManualResetEvent(false);
-            }
+            var items = new List<ItemData>();
+            var tasks = new List<Task>();
 
             if (ES_UU898.Checked)
             {
-                new Thread(() =>
-                {
-                    Spider.UU898.FetchData(arena, items);
-                    resetEvent[0].Set();
-                })
-                {
-                    IsBackground = true,
-                    Priority = ThreadPriority.BelowNormal,
-                    Name = "Fetch UU898"
-                }.Start();
+                tasks.Add(Task.Run(() => Spider.UU898.FetchData(arena, items)));
             }
 
             if (ES_DD373.Checked)
             {
-                new Thread(() =>
-                {
-                    Spider.DD373.FetchData(arena, items);
-                    resetEvent[1].Set();
-                })
-                {
-                    IsBackground = true,
-                    Priority = ThreadPriority.BelowNormal,
-                    Name = "Fetch DD373"
-                }.Start();
+                tasks.Add(Task.Run(() => Spider.DD373.FetchData(arena, items)));
             }
 
             if (ES_EE979.Checked)
             {
-                new Thread(() =>
-                {
-                    Spider.EE979.FetchData(arena, items);
-                    resetEvent[2].Set();
-                })
-                {
-                    IsBackground = true,
-                    Priority = ThreadPriority.BelowNormal,
-                    Name = "Fetch EE979"
-                }.Start();
+                tasks.Add(Task.Run(() => Spider.EE979.FetchData(arena, items)));
             }
 
             if (ES_7881.Checked)
             {
-                new Thread(() =>
-                {
-                    Spider.S7881.FetchData(arena, items);
-                    resetEvent[3].Set();
-                })
-                {
-                    IsBackground = true,
-                    Priority = ThreadPriority.BelowNormal,
-                    Name = "Fetch 7881"
-                }.Start();
+                tasks.Add(Task.Run(() => Spider.S7881.FetchData(arena, items)));
             }
 
             if (ES_5173.Checked)
             {
-                new Thread(() =>
-                {
-                    Spider.S5173.FetchData(arena, items);
-                    resetEvent[4].Set();
-                })
-                {
-                    IsBackground = true,
-                    Priority = ThreadPriority.BelowNormal,
-                    Name = "Fetch 5173"
-                }.Start();
+                tasks.Add(Task.Run(() => Spider.S5173.FetchData(arena, items)));
             }
 
-            WaitHandle.WaitAll(resetEvent);
-
-            foreach (var e in resetEvent)
-            {
-                e.Close();
-                e.Dispose();
-            }
+            Task.WaitAll(tasks.ToArray(), 2333);
 
             Invoke(new Action(() =>
             {
@@ -277,6 +220,14 @@ namespace DNF_Gold
 
                 foreach (var item in items.OrderByDescending(p => p.Ratio).ToList())
                 {
+                    // 过滤之前检查到已经被购买的
+                    if (BuyCheck.Contains(item.pGUID))
+                    {
+                        // 已被买
+                        Debug.Print("Ignore [{0}]", item.pGUID);
+                        continue;
+                    }
+
                     // 过滤异常不能交易的金币?
                     // 黑商你妈死了?
                     // 哄抬你妈的金价呢?
@@ -339,9 +290,9 @@ namespace DNF_Gold
             beginUpdate = false;
         }
 
-        private void BeginCheckPrice(List<string> sellOut)
+        private void BeginCheckPrice()
         {
-            if (closing) return;
+            if (closing || !ItemsList.Created) return;
 
             var list = new List<string>();
 
@@ -354,7 +305,7 @@ namespace DNF_Gold
 
                     var pGuid = ItemsList.Rows[index].Cells["pGUID"].Value.ToString();
 
-                    if (string.IsNullOrEmpty(pGuid) || sellOut.Contains(pGuid))
+                    if (string.IsNullOrEmpty(pGuid) || BuyCheck.Contains(pGuid))
                         continue;
 
                     list.Add(pGuid);
@@ -365,7 +316,7 @@ namespace DNF_Gold
             {
                 var time = DateTime.Now;
 
-                CheckItemBuyable(key, sellOut);
+                CheckItemBuyable(key);
 
                 var diff = (int)(DateTime.Now - time).TotalMilliseconds;
                 if (diff < 1000)
@@ -376,7 +327,7 @@ namespace DNF_Gold
             }
         }
 
-        private void CheckItemBuyable(string guid, List<string> sellOut)
+        private void CheckItemBuyable(string guid)
         {
             try
             {
@@ -399,7 +350,7 @@ namespace DNF_Gold
                 if (buyable)
                     return;
 
-                sellOut.Add(item.pGUID);
+                BuyCheck.Add(item.pGUID);
 
                 Invoke(new Action(() =>
                 {
