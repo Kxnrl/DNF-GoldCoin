@@ -124,6 +124,7 @@ namespace DNF_Gold
                             if (MessageBox.Show(data["Message"] + Environment.NewLine + "点击是退出并更新", "发现新版本 v" + data["Version"]["Major"] + "." + data["Version"]["Minor"] + "." + data["Version"]["Build"], MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             {
                                 Process.Start("https://github.com/Kxnrl/DNF-GoldCoin/releases");
+                                Process.Start("https://github.com/Kxnrl/DNF-GoldCoin/releases/latest");
                                 Environment.Exit(1);
                             }
                         }));
