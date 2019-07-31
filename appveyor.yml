@@ -8,9 +8,16 @@ clone_folder: c:\build
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.cs'
-  assembly_version: '{version}.{build}'
-  assembly_file_version: '{version}.{build}'
-  assembly_informational_version: '{version}.{build}'
+  assembly_version: $(Major).$(Minor).$(Build).{build}
+  assembly_file_version: $(Major).$(Minor).$(Build).{build}
+  assembly_informational_version: $(Major).$(Minor).$(Build).{build}
+environment:
+  Major:
+    secure: jHuXsuGiVQokAbKMuQbQnA==
+  Minor:
+    secure: jHuXsuGiVQokAbKMuQbQnA==
+  Build:
+    secure: n9Ivv6IDHEqUTnwSpJiHPg==
 build:
   verbosity: minimal
 test: off
