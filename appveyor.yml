@@ -23,8 +23,6 @@ environment:
     secure: n9Ivv6IDHEqUTnwSpJiHPg==
 build:
   verbosity: minimal
-test: off
 artifacts:
 - path: '**\bin\$(configuration)\*.exe'
-  name: Build
-deploy: off
+  name: DNF-GoldCoin
