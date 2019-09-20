@@ -53,7 +53,7 @@ namespace DNF_Gold.Spider
                     var scale = string.Format("{0} [{1}]", match[0].InnerText, match[1].InnerText);
                     var regex = new Regex(@"\d{4,}").Match(title.Split('=')[1]);
 
-                    if (!regex.Success)
+                    if (!regex.Success || title.Contains("指定买家购买")) // 过滤
                         continue;
 
                     var coins = regex.Value;
